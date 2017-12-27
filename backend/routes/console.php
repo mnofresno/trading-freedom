@@ -1,7 +1,7 @@
 <?php
 
 use Illuminate\Foundation\Inspiring;
-
+use App\Services\BittrexCrawlerService as BittrexCrawler;
 /*
 |--------------------------------------------------------------------------
 | Console Routes
@@ -16,3 +16,7 @@ use Illuminate\Foundation\Inspiring;
 Artisan::command('inspire', function () {
     $this->comment(Inspiring::quote());
 })->describe('Display an inspiring quote');
+
+Artisan::command('balances', function (BittrexCrawler $bittrexCrawler) {
+    $this->comment(print_r($bittrexCrawler->GetAllBalances(), true));
+})->describe('Display all my account balances');
