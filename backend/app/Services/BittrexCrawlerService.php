@@ -58,7 +58,7 @@ class BittrexCrawlerService
                     $saldoUSD    = $this->toFixed($dollarValue * $saldo, 3);
                     $saldo       = $this->toFixed($saldo, 3);
                     //echo "Moneda: $currency,\t Valor mBTC: $mBtcMean,\t Valor USD: $dollarValue,\t Saldo: $saldo,\t Saldo mBTC: $saldoMBTC,\t Saldo USD: $saldoUSD\r\n";
-                    $detalleBalance['Moneda'    ] = $currency;
+                    $detalleBalance['MONEDA'    ] = $currency;
                     $detalleBalance['VALOR_MBTC'] = $mBtcMean;
                     $detalleBalance['VALOR_USDT'] = $dollarValue;
                     $detalleBalance['SALDO'     ] = $saldo;
