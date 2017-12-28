@@ -53,6 +53,7 @@ angular.module('trading-freedom.services', [])
 {
     var self = function(config, callback)
     {
+        config.headers = { 'Authorization': 'here goes the token', 'X-Requested-With' : 'XMLHttpRequest' };
         $http(config).then(function(response){ callback(response.data); });
     };
     
