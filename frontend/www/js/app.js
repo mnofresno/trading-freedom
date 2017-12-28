@@ -23,6 +23,11 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
   });
 })
 
+.config(function($ionicConfigProvider)
+{
+    $ionicConfigProvider.tabs.position('bottom'); // other values: top
+})
+
 .config(function($stateProvider, $urlRouterProvider) {
 
   // Ionic uses AngularUI Router which uses the concept of states

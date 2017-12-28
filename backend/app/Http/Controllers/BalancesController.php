@@ -9,7 +9,7 @@ use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
 use App\Services\BittrexCrawlerService as BittrexCrawler;
 
-class CrawlerController extends Controller
+class BalancesController extends Controller
 {
     private $bittrexCrawler;
     
@@ -18,7 +18,7 @@ class CrawlerController extends Controller
         $this->bittrexCrawler = $bittrexCrawler;
     }
     
-    public function GetBalances()
+    public function index()
     {
         return $this->bittrexCrawler->GetAllBalances();
     }
