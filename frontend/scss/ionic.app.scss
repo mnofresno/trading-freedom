@@ -21,3 +21,11 @@ $ionicons-font-path: "../lib/ionic/fonts" !default;
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
+.valores-mercado *:not(i){
+    font-size: 8pt;
+}
+
+.valores-mercado .list.card *{
+    max-height: 100px;
+    margin-top: -5px;
+}

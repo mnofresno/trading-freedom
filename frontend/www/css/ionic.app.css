@@ -9871,3 +9871,10 @@ a.button {
   opacity: 0;
   -webkit-transition-duration: 0s;
   transition-duration: 0s; }
+
+.valores-mercado *:not(i) {
+  font-size: 8pt; }
+
+.valores-mercado .list.card * {
+  max-height: 100px;
+  margin-top: -5px; }
