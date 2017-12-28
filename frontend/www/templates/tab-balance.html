@@ -1,0 +1,56 @@
+<ion-view view-title="Balances">
+    <ion-content class="padding">
+
+        <div class="row">
+            <div class="col">
+                <h2>Saldos de Cuentas</h2>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <button class="button button-royal" ng-click="ctrl.GetBalances()">Update</button>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="card">
+                    <a href="#" class="item item-icon-left">
+                        <i class="icon ion-home"></i>
+                        <div class="row">
+                            <div class="col col-50">
+                                SALDO TOTAL U$S:
+                            </div>
+                            <div class="col col-50">
+                                {{ ctrl.Balances.TOTAL_USD }}
+                            </div>
+                        </div>
+                    </a>
+                </div>                
+            </div>
+        </div>
+        <div class="row">
+            <div class="col">
+                <div class="list card">
+                    <a href="#" class="item item-icon-left" ng-repeat="item in ctrl.Balances.balances">
+                        <i class="icon ion-home"></i>
+                        <div class="row">
+                            <div class="col col-25">
+                                {{ item.Moneda }}
+                            </div>
+                            <div class="col col-25">
+                                {{ item.VALOR_USDT }}
+                            </div>
+                            <div class="col col-25">
+                                {{ item.VALOR_USDT }}
+                            </div>
+                            <div class="col col-25">
+                                {{ item.VALOR_USDT }}
+                            </div>
+                        </div>
+                        
+                    </a>
+                </div>                
+            </div>
+        </div>        
+    </ion-content>
+</ion-view>

@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
+angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config'])
 
 .run(function($ionicPlatform) {
   $ionicPlatform.ready(function() {
@@ -40,12 +40,13 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
 
   // Each tab has its own nav history stack:
 
-  .state('tab.dash', {
-    url: '/dash',
+  .state('tab.balance', {
+    url: '/balance',
     views: {
-      'tab-dash': {
-        templateUrl: 'templates/tab-dash.html',
-        controller: 'DashCtrl'
+      'tab-balance': {
+        templateUrl: 'templates/tab-balance.html',
+        controller: 'BalanceCtrl',
+        controllerAs: 'ctrl'
       }
     }
   })
@@ -55,7 +56,8 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
       views: {
         'tab-chats': {
           templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl'
+          controller: 'ChatsCtrl',
+          as: 'ctrl'
         }
       }
     })
@@ -80,6 +82,6 @@ angular.module('starter', ['ionic', 'starter.controllers', 'starter.services'])
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/dash');
+  $urlRouterProvider.otherwise('/tab/balance');
 
 });
