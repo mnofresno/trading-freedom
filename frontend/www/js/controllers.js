@@ -27,6 +27,35 @@ angular.module('trading-freedom.controllers', [])
   };
 })
 
+.controller('LoginCtrl', function(LoginService, $state)
+{
+    var self = this;
+    
+    self.credentials = { email: '', password: '' };
+    
+    self.loginWasCalled = false;
+    self.loginErrors = [];
+    self.Login = function()
+    {
+        self.loginErrors = [];
+        self.loginWasCalled = true;
+        LoginService.Login(self.credentials, function()
+        {
+            $state.go('tab.balance');
+        },function(error)
+        {
+            self.loginErrors = error;
+            setTimeout(function()
+            {
+                self.loginErrors = [];
+            }, 1000);
+            self.loginWasCalled = false;
+        });
+    };
+
+    return self;
+})
+
 .controller('BalanceCtrl', function(CrawlerService)
 {
     var self = this;

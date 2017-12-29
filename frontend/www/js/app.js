@@ -7,20 +7,37 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config'])
 
-.run(function($ionicPlatform) {
-  $ionicPlatform.ready(function() {
-    // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
-    // for form inputs)
-    if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard) {
-      cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
-      cordova.plugins.Keyboard.disableScroll(true);
+.run(function($ionicPlatform, $rootScope, $state, AuthService)
+{
+    $ionicPlatform.ready(function()
+    {
+        // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
+        // for form inputs)
+        if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard)
+        {
+            cordova.plugins.Keyboard.hideKeyboardAccessoryBar(true);
+            cordova.plugins.Keyboard.disableScroll(true);
+        }
+        if (window.StatusBar)
+        {
+            // org.apache.cordova.statusbar required
+            StatusBar.styleDefault();
+        }
 
-    }
-    if (window.StatusBar) {
-      // org.apache.cordova.statusbar required
-      StatusBar.styleDefault();
-    }
-  });
+        $rootScope.$on('unauthorized', function()
+        {
+            $state.go('login');
+        });
+        
+        if (AuthService.isAuthed())
+        {
+            $state.go('tab.balance');
+        }
+        else
+        {
+            $state.go('login');
+        }
+    });
 })
 
 .config(function($ionicConfigProvider)
@@ -62,7 +79,7 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
         'tab-chats': {
           templateUrl: 'templates/tab-chats.html',
           controller: 'ChatsCtrl',
-          as: 'ctrl'
+        controllerAs: 'ctrl'
         }
       }
     })
@@ -71,7 +88,8 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
       views: {
         'tab-chats': {
           templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl'
+          controller: 'ChatDetailCtrl',
+            controllerAs: 'ctrl'
         }
       }
     })
@@ -81,12 +99,21 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
     views: {
       'tab-account': {
         templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl'
+        controller: 'AccountCtrl',
+        controllerAs: 'ctrl'
       }
     }
+  })
+  
+  .state('login', {
+    url: '/login',
+    templateUrl: 'templates/login.html',
+    controller: 'LoginCtrl',
+    controllerAs: 'ctrl'
   });
 
   // if none of the above states are matched, use this as the fallback
-  $urlRouterProvider.otherwise('/tab/balance');
+  //$urlRouterProvider.otherwise('/tab/balance');
+  //$urlRouterProvider.otherwise('/login');
 
 });

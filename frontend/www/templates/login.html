@@ -1,0 +1,46 @@
+<ion-view view-title="Login">
+    <ion-content>
+        <form ng-submit="ctrl.Login()">
+            <div class="row">
+                <div class="col">
+                    <div class="row text-center">
+                        <div class="col">
+                            <h4>TRADING FREEDOM</h4>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label class="item item-input">
+                                <input ng-model="ctrl.credentials.email" type="email" placeholder="E-mail">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row">
+                        <div class="col">
+                            <label class="item item-input">
+                                <input ng-model="ctrl.credentials.password" type="password" placeholder="Password">
+                            </label>
+                        </div>
+                    </div>
+                    <div class="row text-center" ng-show="ctrl.loginErrors.length > 0">
+                        <div class="col col-100">
+                            <div class="row" ng-repeat="error in ctrl.loginErrors">
+                                <div class="col">
+                                    <strong style="color: red;">{{ error }}</strong>
+                                </div>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="row text-center">
+                        <div class="col col-50">
+                            <button class="button button-royal" ng-disabled="ctrl.loginWasCalled" ng-click="ctrl.Login()">Login</button>
+                        </div>
+                        <div class="col col-50">
+                            <button class="button button-balanced" disabled ng-click="ctrl.Register()">Register</button>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </form>
+    </ion-content>
+</ion-view>

@@ -32,7 +32,7 @@ class LoginController extends Controller
         $token = null;
         try {
            if (!$token = JWTAuth::attempt($credentials)) {
-            return response()->json(['invalid_email_or_password'], 422);
+            return response()->json(['E-mail o password inválidos'], 422);
            }
         } catch (JWTAuthException $e) {
             return response()->json(['failed_to_create_token'], 500);
