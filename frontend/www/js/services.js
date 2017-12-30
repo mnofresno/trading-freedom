@@ -94,7 +94,7 @@ angular.module('trading-freedom.services', [])
   };
 })
 
-.service('http', function($http, AuthService, $rootScope)
+.service('http', function($http, AuthService)
 {
     var self = function(config)
     {
@@ -111,9 +111,9 @@ angular.module('trading-freedom.services', [])
             config.success(response.data);
         }, function(response)
         {
-            if(400 < response.status < 500)
+            if(400 < response.status < 420)
             {
-                $rootScope.$broadcast('unauthorized');
+                AuthService.clear();
             }
             if(config.error) config.error(response.data);
         });
@@ -122,7 +122,7 @@ angular.module('trading-freedom.services', [])
     return self;
 })
 
-.service('AuthService', function($localStorage)
+.service('AuthService', function($localStorage, $rootScope)
 {
     var self = this;
     
@@ -139,6 +139,12 @@ angular.module('trading-freedom.services', [])
     self.setToken = function(token)
     {
         $localStorage.set('user_token', token);
+    };
+    
+    self.clear = function()
+    {
+        $rootScope.$broadcast('unauthorized');
+        $localStorage.delete('user_token');
     };
     
     return self;

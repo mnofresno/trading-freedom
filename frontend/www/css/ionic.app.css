@@ -9878,3 +9878,6 @@ a.button {
 .valores-mercado .list.card * {
   max-height: 100px;
   margin-top: -5px; }
+
+.button.button-login {
+  min-width: 100%; }
