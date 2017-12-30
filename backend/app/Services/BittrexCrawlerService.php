@@ -77,7 +77,10 @@ class BittrexCrawlerService
             
         }
         
-        return [ 'TOTAL_USD' => $saldoTotalUSD, 'TOTAL_MBTC' => $saldoTotalMBTC, 'VALOR_BTC_USD' => $btcMean, 'balances' => $outputBalances ];
+        return [ 'TOTAL_USD'     => $saldoTotalUSD,
+                 'TOTAL_MBTC'    => $saldoTotalMBTC,
+                 'VALOR_BTC_USD' => $btcMean,
+                 'balances'      => $outputBalances ];
     }
 
     private function toFixed($number)
