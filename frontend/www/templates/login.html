@@ -11,7 +11,7 @@
                     <div class="row">
                         <div class="col">
                             <label class="item item-input">
-                                <input ng-model="ctrl.credentials.email" type="email" placeholder="E-mail">
+                                <input ng-model="ctrl.credentials.email" autofocus="autofocus" type="email" placeholder="E-mail">
                             </label>
                         </div>
                     </div>
@@ -33,7 +33,7 @@
                     </div>
                     <div class="row text-center">
                         <div class="col col-50">
-                            <button class="button button-royal button-login" ng-disabled="ctrl.loginWasCalled" ng-click="ctrl.Login()">Login</button>
+                            <button class="button button-royal button-login" ng-disabled="ctrl.loginWasCalled || !ctrl.credentials.isValid()" ng-click="ctrl.Login()">Login</button>
                         </div>
                         <div class="col col-50">
                             <button class="button button-balanced button-login" disabled ng-click="ctrl.Register()">Register</button>

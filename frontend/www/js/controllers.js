@@ -31,7 +31,20 @@ angular.module('trading-freedom.controllers', [])
 {
     var self = this;
     
-    self.credentials = { email: '', password: '' };
+    function Credentials()
+    {
+        var c = this;
+        c.email    = '';
+        c.password = '';
+        c.isValid  = function()
+        {
+            return c.email !== '' && c.password !== '';
+        };
+        
+        return c;
+    }
+    
+    self.credentials = new Credentials();
     
     self.loginWasCalled = false;
     self.loginErrors = [];
@@ -44,6 +57,7 @@ angular.module('trading-freedom.controllers', [])
             $state.go('tab.balance');
         },function(error)
         {
+            self.credentials = new Credentials();
             self.loginErrors = error;
             setTimeout(function()
             {

@@ -115,7 +115,7 @@ angular.module('trading-freedom.services', [])
             {
                 AuthService.clear();
             }
-            if(config.error) config.error(response.data);
+            if(config.error) config.error(response.data ? response.data : ["No pudo conectarse con el servidor"]);
         });
     };
     

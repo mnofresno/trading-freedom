@@ -26,4 +26,9 @@ class User extends Authenticatable
     protected $hidden = [
         'password', 'remember_token',
     ];
+    
+    public function apiKeys()
+    {
+		return $this->hasMany(UserKey::class, 'user_id');
+    }
 }
