@@ -2,6 +2,8 @@
 
 use Illuminate\Foundation\Inspiring;
 use App\Services\BittrexCrawlerService as BittrexCrawler;
+use App\Services\Repositories\AssetsValuesRepository as AssetsValuesRepository;
+
 /*
 |--------------------------------------------------------------------------
 | Console Routes
@@ -20,3 +22,7 @@ Artisan::command('inspire', function () {
 Artisan::command('balances', function (BittrexCrawler $bittrexCrawler) {
     $this->comment(print_r($bittrexCrawler->GetAllBalances(), true));
 })->describe('Display all my account balances');
+
+Artisan::command('update-balances', function (AssetsValuesRepository $assetsValuesRepository) {
+    $assetsValuesRepository->UpdateAssetsValues();
+})->describe('Save account balances in database');

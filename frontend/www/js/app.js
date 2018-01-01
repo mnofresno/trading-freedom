@@ -107,6 +107,7 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
   
   .state('login', {
     url: '/login',
+    cache: false,
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl',
     controllerAs: 'ctrl'

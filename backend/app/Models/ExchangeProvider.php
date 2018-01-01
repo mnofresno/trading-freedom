@@ -1,12 +1,13 @@
 <?php
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
-
-namespace App\Models;
 
 class ExchangeProvider extends Model
 {
     protected $table = "exchange_providers";
+    
+    protected $guarded = ['id'];
     
     public function apiKeys()
     {

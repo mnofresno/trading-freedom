@@ -1,10 +1,11 @@
 <?php
+namespace App\Models;
 
 use Illuminate\Database\Eloquent\Model;
 
-namespace App\Models;
-
 class Asset extends Model
 {
+    protected $table = "assets";
     
+    protected $guarded = ['id'];
 }

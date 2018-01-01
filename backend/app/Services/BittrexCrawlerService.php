@@ -6,7 +6,7 @@ use Messerli90\Bittrex\Bittrex;
 
 class BittrexCrawlerService
 {
-    public function GetAllBalances()
+    public function GetAllBalances($user_id = null)
     {    
         $bittrexClient = new Bittrex(config('services.bittrex.key'), config('services.bittrex.secret'));
         
@@ -80,9 +80,15 @@ class BittrexCrawlerService
         return [ 'TOTAL_USD'     => $saldoTotalUSD,
                  'TOTAL_MBTC'    => $saldoTotalMBTC,
                  'VALOR_BTC_USD' => $btcMean,
-                 'balances'      => $outputBalances ];
+                 'assets'        => $outputBalances ];
     }
 
+    public function GetAssets()
+    {
+        $bittrex = new Bittrex();
+        return $bittrex->getMarkets();
+    }
+    
     private function toFixed($number)
     {
         return number_format($number, 3, ".", "");
