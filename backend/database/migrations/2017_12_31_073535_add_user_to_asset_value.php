@@ -13,7 +13,7 @@ class AddUserToAssetValue extends Migration
      */
     public function up()
     {
-        Schema::table('assets_values', function(Blueprint $table)
+        Schema::table('assets_values_summaries', function(Blueprint $table)
         {
             $table->integer('user_id')->unsigned()->nullable();
             $table->foreign('user_id')->references('id')->on('users'); 
@@ -27,7 +27,7 @@ class AddUserToAssetValue extends Migration
      */
     public function down()
     {
-        Schema::table('users', function(Blueprint $table)
+        Schema::table('assets_values_summaries', function(Blueprint $table)
         {
             $table->dropForeign(['user_id']);
             $table->dropColumn('user_id');

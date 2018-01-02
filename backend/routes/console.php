@@ -3,6 +3,7 @@
 use Illuminate\Foundation\Inspiring;
 use App\Services\BittrexCrawlerService as BittrexCrawler;
 use App\Services\Repositories\AssetsValuesRepository as AssetsValuesRepository;
+use App\Services\Repositories\AssetsRepository as AssetsRepository;
 
 /*
 |--------------------------------------------------------------------------
@@ -26,3 +27,7 @@ Artisan::command('balances', function (BittrexCrawler $bittrexCrawler) {
 Artisan::command('update-balances', function (AssetsValuesRepository $assetsValuesRepository) {
     $assetsValuesRepository->UpdateAssetsValues();
 })->describe('Save account balances in database');
+
+Artisan::command('update-assets', function (AssetsRepository $assetsRepository) {
+    $assetsRepository->UpdateAssets();
+})->describe('Update local copy of the available markets information');

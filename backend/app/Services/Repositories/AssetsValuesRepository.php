@@ -14,11 +14,13 @@ class AssetsValuesRepository
     
     public function __construct(AssetValueSummary     $assetValueSummary,
                                 AssetValue            $assetValue,
-                                BittrexCrawlerService $crawlerService)
+                                BittrexCrawlerService $crawlerService,
+                                AssetsRepository      $assetsRepository)
     {
         $this->assetValue        = $assetValue;
         $this->crawlerService    = $crawlerService;
         $this->assetValueSummary = $assetValueSummary;
+        $this->assetsRepository  = $assetsRepository;
     }
     
     public function UpdateAssetsValues($user_id = null)
@@ -28,9 +30,10 @@ class AssetsValuesRepository
         $summary->user_id = $user_id; 
         $summary->save();
         
-        foreach($balances['assets'] as $asset)
+        foreach($balances['assets'] as $currentValue)
         {
-            $value = $this->assetValue->create($asset);
+            $currentValue['asset_id'] = $this->assetsRepository->findOrCreateBySymbol($currentValue['MONEDA'])->id;
+            $value = $this->assetValue->create($currentValue);
             $value->asset_value_summary_id = $summary->id;
             $value->save();
         }

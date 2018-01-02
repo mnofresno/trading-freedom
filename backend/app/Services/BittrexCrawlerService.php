@@ -52,12 +52,12 @@ class BittrexCrawlerService
                         $dollarValue = $btcMean;
                     }
                     
-                    $mBtcMean    = $this->toFixed($mBtcMean, 3);
-                    $dollarValue = $this->toFixed($dollarValue, 3);
-                    $saldoMBTC   = $this->toFixed($mBtcMean * $saldo, 3);
-                    $saldoUSD    = $this->toFixed($dollarValue * $saldo, 3);
-                    $saldo       = $this->toFixed($saldo, 3);
-                    //echo "Moneda: $currency,\t Valor mBTC: $mBtcMean,\t Valor USD: $dollarValue,\t Saldo: $saldo,\t Saldo mBTC: $saldoMBTC,\t Saldo USD: $saldoUSD\r\n";
+                    $mBtcMean    = $this->toFixed($mBtcMean);
+                    $dollarValue = $this->toFixed($dollarValue);
+                    $saldoMBTC   = $this->toFixed($mBtcMean * $saldo);
+                    $saldoUSD    = $this->toFixed($dollarValue * $saldo);
+                    $saldo       = $this->toFixed($saldo);
+                    
                     $detalleBalance['MONEDA'    ] = $currency;
                     $detalleBalance['VALOR_MBTC'] = $mBtcMean;
                     $detalleBalance['VALOR_USDT'] = $dollarValue;
@@ -73,8 +73,6 @@ class BittrexCrawlerService
                 }
                 $outputBalances[] = $detalleBalance;
             }
-            
-            
         }
         
         return [ 'TOTAL_USD'     => $saldoTotalUSD,
@@ -83,14 +81,28 @@ class BittrexCrawlerService
                  'assets'        => $outputBalances ];
     }
 
-    public function GetAssets()
+    public function GetAllAssetsVersusBtc()
     {
         $bittrex = new Bittrex();
-        return $bittrex->getMarkets();
+        $markets = $bittrex->getMarkets()->result;
+        
+        $result = [];
+        
+        foreach($markets as $market)
+        {
+            if($market->BaseCurrency == 'BTC' && $market->IsActive == 1)
+            {
+                $result[] = [ 'code' => $market->MarketCurrency, 'description' => $market->MarketCurrencyLong ];
+            }
+        }
+        
+        $result[] = [ 'code' => 'BTC', 'description' => 'Bitcoin' ];
+        
+        return $result;
     }
     
     private function toFixed($number)
     {
-        return number_format($number, 3, ".", "");
+        return number_format($number, 4, ".", "");
     }
 }
