@@ -8,4 +8,9 @@ class Asset extends Model
     protected $table = "assets";
     
     protected $guarded = ['id'];
+    
+    public function assetValues()
+    {
+		return $this->hasMany(AssetValue::class, 'asset_id');
+    }
 }

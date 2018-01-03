@@ -4,6 +4,7 @@ use Illuminate\Foundation\Inspiring;
 use App\Services\BittrexCrawlerService as BittrexCrawler;
 use App\Services\Repositories\AssetsValuesRepository as AssetsValuesRepository;
 use App\Services\Repositories\AssetsRepository as AssetsRepository;
+use App\Services\Repositories\UsersAssetsRepository as UsersAssetsRepository;
 
 /*
 |--------------------------------------------------------------------------
@@ -21,13 +22,21 @@ Artisan::command('inspire', function () {
 })->describe('Display an inspiring quote');
 
 Artisan::command('balances', function (BittrexCrawler $bittrexCrawler) {
-    $this->comment(print_r($bittrexCrawler->GetAllBalances(), true));
+    $this->comment(print_r($bittrexCrawler->GetAllBalances(1), true));
 })->describe('Display all my account balances');
 
-Artisan::command('update-balances', function (AssetsValuesRepository $assetsValuesRepository) {
+Artisan::command('update-assets-values', function (AssetsValuesRepository $assetsValuesRepository) {
     $assetsValuesRepository->UpdateAssetsValues();
 })->describe('Save account balances in database');
 
 Artisan::command('update-assets', function (AssetsRepository $assetsRepository) {
     $assetsRepository->UpdateAssets();
 })->describe('Update local copy of the available markets information');
+
+Artisan::command('test', function (UsersAssetsRepository $usersAssetsRepository) {
+    print_r($usersAssetsRepository->UpdateUserAssetsValues(1));
+})->describe('run a test');
+
+Artisan::command('all-markets', function (BittrexCrawler $bittrexCrawler) {
+    $this->comment(print_r($bittrexCrawler->GetAllAssetsVersusBtcWithMarketData(), true));
+})->describe('Display all my account balances');

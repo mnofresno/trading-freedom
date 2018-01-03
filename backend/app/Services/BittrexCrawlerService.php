@@ -3,21 +3,63 @@
 namespace App\Services;
 
 use Messerli90\Bittrex\Bittrex;
+use App\Models\User as User;
+use App\Models\ExchangeProvider as ExchangeProvider;
 
 class BittrexCrawlerService
 {
-    public function GetAllBalances($user_id = null)
-    {    
-        $bittrexClient = new Bittrex(config('services.bittrex.key'), config('services.bittrex.secret'));
+    private $user;
+    private $exchangeProvider;
+    
+    public function __construct(User $user, ExchangeProvider $exchangeProvider)
+    {
+        $this->exchangeProvider = $exchangeProvider;
+        $this->user = $user;
+    }
+    
+    private function GetBittrex($user_id = null)
+    {
+        if($user_id == null) return new Bittrex();
+        $currentUser = $this->user->find($user_id);
+        
+        $bittrexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'BITTREX')->firstOrFail()->id;
+        
+        $userBittrexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $bittrexExchangeProviderId)->firstOrFail();
+                     
+        return new Bittrex($userBittrexKey->api_key, $userBittrexKey->api_secret);
+    }
+
+    public function GetBalances($user_id = null)
+    {
+        $bittrexClient = $this->GetBittrex($user_id);
+        $balances = $bittrexClient->getBalances()->result;
+        return collect($balances)->filter(function($v){ return $v->Balance > 0; })->toArray();
+    }
+
+    private function GetBitcoinDollarMarket()
+    {
+        $bittrexClient = $this->GetBittrex();
         
         $btcMkt = $bittrexClient->getMarketSummary('USDT-BTC');
+        
         $btcMkt = $btcMkt->result[0];
         
         $btcLast = $btcMkt->Last;
         $btcBid  = $btcMkt->Bid;
         $btcAsk  = $btcMkt->Ask;
-        
         $btcMean = ( $btcLast + $btcBid + $btcAsk ) / 3;
+        
+        return $btcMean;
+        
+    }
+    
+    public function GetAllBalances($user_id)
+    {    
+        $bittrexClient = $this->GetBittrex($user_id);
+        $summaries = collect($bittrexClient->getMarketSummaries()->result);
+        
+        $btcMean = $this->GetBitcoinDollarMarket();
+        
         $balances = $bittrexClient->getBalances()->result;
         
         $outputBalances = [];
@@ -36,11 +78,11 @@ class BittrexCrawlerService
                     
                     if($currency != 'BTC') 
                     {
-                        $mkt = $bittrexClient->getMarketSummary('BTC-'.$currency)->result;
+                        $mkt = $summaries->first(function($s)use($currency){ return $s->MarketName == 'BTC-'.$currency; });
 
-                        $last        = $mkt[0]->Last;
-                        $bid         = $mkt[0]->Bid;
-                        $ask         = $mkt[0]->Ask;
+                        $last        = $mkt->Last;
+                        $bid         = $mkt->Bid;
+                        $ask         = $mkt->Ask;
                         $mean        = ( $last + $bid + $ask ) / 3;
                         $mBtcMean    = $mean * 1000;
                         $dollarValue = $mean * $btcMean;
@@ -80,10 +122,34 @@ class BittrexCrawlerService
                  'VALOR_BTC_USD' => $btcMean,
                  'assets'        => $outputBalances ];
     }
-
+    
+    public function GetAllAssetsVersusBtcWithMarketData()
+    {
+        $bittrex = $this->GetBittrex();
+        $markets = $bittrex->getMarketSummaries()->result;
+        
+        $result = [];
+        
+        $valorBtc = $this->GetBitcoinDollarMarket();
+        
+        foreach($markets as $market)
+        {
+            if(starts_with($market->MarketName, 'BTC-'))
+            {
+                $valorPromedio = ($market->Last + $market->Bid + $market->Ask) / 3;
+                print_r($market);
+                $result[] = [ 'code' => str_after($market->MarketName, 'BTC-'), 'VALOR_MBTC' => $valorPromedio * 1000, 'VALOR_USDT' => $valorPromedio * $valorBtc ];
+            }
+        }
+        
+        $result[] = [ 'code' => 'BTC', 'VALOR_MBTC' => 1000, 'VALOR_USDT' => $valorBtc ];
+        
+        return $result;
+    }
+    
     public function GetAllAssetsVersusBtc()
     {
-        $bittrex = new Bittrex();
+        $bittrex = $this->GetBittrex();
         $markets = $bittrex->getMarkets()->result;
         
         $result = [];

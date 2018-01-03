@@ -23,24 +23,15 @@ class AssetsValuesRepository
         $this->assetsRepository  = $assetsRepository;
     }
     
-    public function UpdateAssetsValues($user_id = null)
+    public function UpdateAssetsValues()
     {
-        $balances = $this->crawlerService->GetAllBalances($user_id);
-        $summary = $this->assetValueSummary->create(collect($balances)->except('assets')->toArray());
-        $summary->user_id = $user_id; 
-        $summary->save();
+        $markets = $this->crawlerService->GetAllAssetsVersusBtcWithMarketData();
         
-        foreach($balances['assets'] as $currentValue)
+        foreach($markets as $currentMarket)
         {
-            $currentValue['asset_id'] = $this->assetsRepository->findOrCreateBySymbol($currentValue['MONEDA'])->id;
-            $value = $this->assetValue->create($currentValue);
-            $value->asset_value_summary_id = $summary->id;
-            $value->save();
+            $currentMarket['asset_id'] = $this->assetsRepository->findOrCreateBySymbol($currentMarket['code'])->id;
+            unset($currentMarket['code']);
+            $value = $this->assetValue->create($currentMarket);
         }
-    }
-    
-    public function GetBalances()
-    {
-        
     }
 }
