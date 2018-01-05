@@ -136,8 +136,7 @@ class BittrexCrawlerService
         {
             if(starts_with($market->MarketName, 'BTC-'))
             {
-                $valorPromedio = ($market->Last + $market->Bid + $market->Ask) / 3;
-                print_r($market);
+                $valorPromedio = ($market->Last + $market->Bid + $market->Ask) / 3;                
                 $result[] = [ 'code' => str_after($market->MarketName, 'BTC-'), 'VALOR_MBTC' => $valorPromedio * 1000, 'VALOR_USDT' => $valorPromedio * $valorBtc ];
             }
         }

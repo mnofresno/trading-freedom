@@ -29,9 +29,16 @@ class AssetsValuesRepository
         
         foreach($markets as $currentMarket)
         {
-            $currentMarket['asset_id'] = $this->assetsRepository->findOrCreateBySymbol($currentMarket['code'])->id;
+            $asset_id = $this->assetsRepository->findOrCreateBySymbol($currentMarket['code'])->id;
             unset($currentMarket['code']);
+            $currentMarket['asset_id'] = $asset_id;
+            
             $value = $this->assetValue->create($currentMarket);
         }
+    }
+    
+    public function GetLastAssetValues($asset_id)
+    {
+        return $this->assetValue->where('asset_id', '=', $asset_id)->orderBy('updated_at', 'desc')->limit(2)->get()->toArray();
     }
 }

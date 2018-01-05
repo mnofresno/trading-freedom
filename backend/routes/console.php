@@ -27,7 +27,11 @@ Artisan::command('balances', function (BittrexCrawler $bittrexCrawler) {
 
 Artisan::command('update-assets-values', function (AssetsValuesRepository $assetsValuesRepository) {
     $assetsValuesRepository->UpdateAssetsValues();
-})->describe('Save account balances in database');
+})->describe('Save assets values in database');
+
+Artisan::command('show-last-values', function (AssetsValuesRepository $assetsValuesRepository) {
+    $this->comment(print_r($assetsValuesRepository->GetLastAssetValues(4), true));
+})->describe('Show last series of values');
 
 Artisan::command('update-assets', function (AssetsRepository $assetsRepository) {
     $assetsRepository->UpdateAssets();
