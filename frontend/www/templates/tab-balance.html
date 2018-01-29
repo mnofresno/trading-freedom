@@ -1,15 +1,9 @@
-<ion-view view-title="Saldos">
+<ion-view view-title="Saldos de cuentas">
     <ion-content class="padding">
-        <div class="row">
-            <div class="col">
-                <h6>Saldos de Cuentas</h6>
-            </div>
-        </div>
-        <div class="row">
-            <div class="col">
-                <button class="button button-royal" ng-click="ctrl.GetBalances()">Update</button>
-            </div>
-        </div>
+        <ion-refresher
+            pulling-text="Obtener nuevos balances..."
+            on-refresh="ctrl.GetBalances()">
+        </ion-refresher>
         <div class="row">
             <div class="col valores-mercado">
                 <div class="list card">
@@ -86,6 +80,11 @@
                         </div>
                     </a>
                 </div>
+            </div>
+        </div>
+        <div class="row">
+            <div class="col col-100">
+                <button class="button button-royal button-fullwidth" ng-click="ctrl.GetBalances()">Update</button>
             </div>
         </div>
     </ion-content>

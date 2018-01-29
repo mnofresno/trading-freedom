@@ -70,7 +70,7 @@ angular.module('trading-freedom.controllers', [])
     return self;
 })
 
-.controller('BalanceCtrl', function(CrawlerService)
+.controller('BalanceCtrl', function(CrawlerService, $scope)
 {
     var self = this;
     
@@ -81,6 +81,7 @@ angular.module('trading-freedom.controllers', [])
         CrawlerService.GetBalances(function(result)
         {
             self.Balances = result;
+            $scope.$broadcast('scroll.refreshComplete');
         });
     };
     

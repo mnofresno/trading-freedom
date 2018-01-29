@@ -5,9 +5,9 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config'])
+angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config', 'trading-freedom.interceptors'])
 
-.run(function($ionicPlatform, $rootScope, $state, AuthService)
+.run(function($ionicPlatform, $rootScope, $state, AuthService, $ionicLoading)
 {
     $ionicPlatform.ready(function()
     {
@@ -37,6 +37,20 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
         {
             $state.go('login');
         }
+    });
+        
+    $rootScope.$on('loading:show', function()
+    {
+        $ionicLoading.show(
+        {
+            template: 'Cargando...',
+            animation: 'fade-in'
+        });
+    });
+
+    $rootScope.$on('loading:hide', function() 
+    {
+        $ionicLoading.hide();
     });
 })
 
@@ -117,4 +131,9 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
   //$urlRouterProvider.otherwise('/tab/balance');
   //$urlRouterProvider.otherwise('/login');
 
+})
+
+.config(function($httpProvider) 
+{
+	$httpProvider.interceptors.push('LoadingInterceptor');
 });
