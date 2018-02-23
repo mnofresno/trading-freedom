@@ -33,7 +33,7 @@ class BittrexCrawlerService
     {
         $bittrexClient = $this->GetBittrex($user_id);
         $balances = $bittrexClient->getBalances()->result;
-        return collect($balances)->filter(function($v){ return $v->Balance > 0; })->toArray();
+        return collect($balances)->filter(function($v){ return $v->Balance > 0; });
     }
 
     private function GetBitcoinDollarMarket()

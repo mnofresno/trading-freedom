@@ -2,6 +2,7 @@
 
 namespace App\Services\Repositories;
 
+use Carbon\Carbon;
 use App\Models\AssetValue as AssetValue;
 use App\Models\AssetValueSummary as AssetValueSummary;
 use App\Services\BittrexCrawlerService as BittrexCrawlerService;
@@ -23,6 +24,13 @@ class AssetsValuesRepository
         $this->assetsRepository  = $assetsRepository;
     }
     
+    public function KeepOnlyLastValues()
+    {
+        $this->assetValue->where('created_at','<', Carbon::now()->subDays(2)->toDateTimeString())->delete();
+
+        return date('Y-m-d h:i:s');
+    }
+
     public function UpdateAssetsValues()
     {
         $markets = $this->crawlerService->GetAllAssetsVersusBtcWithMarketData();
@@ -35,10 +43,11 @@ class AssetsValuesRepository
             
             $value = $this->assetValue->create($currentMarket);
         }
+        return date('Y-m-d h:i:s');
     }
     
     public function GetLastAssetValues($asset_id)
     {
-        return $this->assetValue->where('asset_id', '=', $asset_id)->orderBy('updated_at', 'desc')->limit(2)->get()->toArray();
+        return $this->assetValue->where('asset_id', '=', $asset_id)->orderBy('created_at', 'desc')->limit(2)->get();
     }
 }

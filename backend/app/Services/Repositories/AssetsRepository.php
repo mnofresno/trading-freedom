@@ -54,4 +54,9 @@ class AssetsRepository
         
         return $asset;
     }
+    
+    public function find($id)
+    {
+        return $this->asset->find($id);
+    }
 }
