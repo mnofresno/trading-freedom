@@ -13,8 +13,13 @@
     RewriteCond %{REQUEST_FILENAME} !-d
     RewriteCond %{REQUEST_FILENAME} !-f
     RewriteRule ^ index.php [L]
-
-    # Handle Authorization Header
-    RewriteCond %{HTTP:Authorization} .
-    RewriteRule .* - [E=HTTP_AUTHORIZATION:%{HTTP:Authorization}]
+    
+    # Handle API Controllers...
+    RewriteCond %{REQUEST_URI} /api/
+    RewriteCond %{REQUEST_URI} !/index.php/api/
+    RewriteRule ^(.*)$ /index.php/api/$1 [L]   
+    
+    RewriteCond %{HTTP:Authorization} ^(.*)
+    RewriteRule .* - [e=HTTP_AUTHORIZATION:%1]
+    
 </IfModule>
