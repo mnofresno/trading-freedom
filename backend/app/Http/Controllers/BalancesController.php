@@ -20,6 +20,6 @@ class BalancesController extends Controller
     
     public function index()
     {
-        return $this->bittrexCrawler->GetAllBalances();
+        return $this->bittrexCrawler->GetAllBalances($this->getCurrentUser()->id);
     }
 }

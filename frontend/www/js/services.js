@@ -103,7 +103,7 @@ angular.module('trading-freedom.services', [])
         if(AuthService.isAuthed())
         {
             var token = AuthService.getToken();
-            config.headers['Authorization'] = token;
+            config.headers['Authorization'] = 'bearer ' + token;
         }
         
         $http(config).then(function(response)
