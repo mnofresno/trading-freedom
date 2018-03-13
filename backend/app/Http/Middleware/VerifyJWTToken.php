@@ -20,7 +20,8 @@ class VerifyJWTToken
     {
         try
         {
-            $user = JWTAuth::toUser($request->header('Authorization'));
+            $token = str_replace("bearer ", "", $request->header('Authorization'));
+            $user = JWTAuth::toUser($token);
         }
         catch (JWTException $e)
         {
