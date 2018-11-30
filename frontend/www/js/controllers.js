@@ -30,7 +30,7 @@ angular.module('trading-freedom.controllers', [])
 .controller('LoginCtrl', function(LoginService, $state)
 {
     var self = this;
-    
+
     function Credentials()
     {
         var c = this;
@@ -40,12 +40,12 @@ angular.module('trading-freedom.controllers', [])
         {
             return c.email !== '' && c.password !== '';
         };
-        
+
         return c;
     }
-    
+
     self.credentials = new Credentials();
-    
+
     self.loginWasCalled = false;
     self.loginErrors = [];
     self.Login = function()
@@ -73,19 +73,31 @@ angular.module('trading-freedom.controllers', [])
 .controller('BalanceCtrl', function(CrawlerService, $scope)
 {
     var self = this;
-    
+
     self.Balances = { balances: [] };
-    
-    self.GetBalances = function()
+
+    self.exchanges = [];
+
+    CrawlerService.GetExchanges(function(data)
     {
-        CrawlerService.GetBalances(function(result)
+        self.exchanges = data;
+    });
+
+    self.GetBalances = function(exchange)
+    {
+        CrawlerService.GetBalances(exchange, function(result)
         {
             self.Balances = result;
             $scope.$broadcast('scroll.refreshComplete');
         });
     };
-    
-    self.GetBalances();
-    
+
+    self.GetDefaultBalances = function()
+    {
+        self.GetBalances({id: 1});
+    };
+
+    self.GetDefaultBalances();
+
     return self;
 });

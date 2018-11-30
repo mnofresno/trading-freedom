@@ -2,51 +2,61 @@
 
 namespace App\Services;
 
-use Messerli90\Bittrex\Bittrex;
 use App\Models\User as User;
 use App\Models\ExchangeProvider as ExchangeProvider;
+use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
-class BittrexCrawlerService implements ICrawlerService
+require(__DIR__."/../../vendor/mariodian/bitfinex-api-php/Bitfinex.php");
+
+class BitfinexCrawlerService implements ICrawlerService
 {
     private $user;
     private $exchangeProvider;
     
-    public function __construct(User $user, ExchangeProvider $exchangeProvider)
+    public function __construct(User $user,  ExchangeProvider $exchangeProvider)
     {
         $this->exchangeProvider = $exchangeProvider;
         $this->user = $user;
     }
     
-    private function GetBittrex($user_id = null)
+    private function GetBitfinex($user_id = null)
     {
-        if($user_id == null) return new Bittrex();
         $currentUser = $this->user->find($user_id);
         
-        $bittrexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'BITTREX')->firstOrFail()->id;
+        $bitfinexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'BITFINEX')->firstOrFail()->id;
         
-        $userBittrexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $bittrexExchangeProviderId)->firstOrFail();
+        $userBittrexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $bitfinexExchangeProviderId)->firstOrFail();
                      
-        return new Bittrex($userBittrexKey->api_key, $userBittrexKey->api_secret);
+        return new \Bitfinex($userBittrexKey->api_key, $userBittrexKey->api_secret);
     }
 
     public function GetBalances($user_id = null)
     {
-        $bittrexClient = $this->GetBittrex($user_id);
-        $balances = $bittrexClient->getBalances()->result;
-        return collect($balances)->filter(function($v){ return $v->Balance > 0; });
+        $bitfinexClient = $this->GetBitfinex($user_id);
+        $balances = $bitfinexClient->get_balances();
+        return collect($balances)->filter(function($v)
+            {
+                return $v["amount"] > 0;
+            })->map(function($item)
+            {
+                $balance = ['Currency' => strtoupper($item['currency']),
+                            'Balance' => $item['amount'],
+                            'Available' => '',
+                            'Pending' => '',
+                            'CryptoAddress' => ''];
+                return json_decode(json_encode($balance), FALSE);
+            });
     }
 
-    private function GetBitcoinDollarMarket()
+    public function GetBitcoinDollarMarket($user_id)
     {
-        $bittrexClient = $this->GetBittrex();
+        $bitfinexClient = $this->GetBitfinex($user_id);
         
-        $btcMkt = $bittrexClient->getMarketSummary('USDT-BTC');
+        $btcMkt = $bitfinexClient->get_ticker('BTCUSD');
         
-        $btcMkt = $btcMkt->result[0];
-        
-        $btcLast = $btcMkt->Last;
-        $btcBid  = $btcMkt->Bid;
-        $btcAsk  = $btcMkt->Ask;
+        $btcLast = $btcMkt['last_price'];
+        $btcBid  = $btcMkt['bid'];
+        $btcAsk  = $btcMkt['ask'];
         $btcMean = ( $btcLast + $btcBid + $btcAsk ) / 3;
         
         return $btcMean;
@@ -55,10 +65,9 @@ class BittrexCrawlerService implements ICrawlerService
     
     public function GetAllBalances($user_id)
     {    
-        $bittrexClient = $this->GetBittrex($user_id);
-        $summaries = collect($bittrexClient->getMarketSummaries()->result);
+        $bitfinexClient = $this->GetBitfinex($user_id);
         
-        $btcMean = $this->GetBitcoinDollarMarket();
+        $btcMean = $this->GetBitcoinDollarMarket($user_id);
         
         $balances = $this->GetBalances($user_id);
         
@@ -66,7 +75,12 @@ class BittrexCrawlerService implements ICrawlerService
         
         $saldoTotalMBTC = 0;
         $saldoTotalUSD  = 0;
-        
+        $symbols = $bitfinexClient->get_symbols();
+        $symbols = collect($symbols);
+
+        $symbols = $symbols->filter(function($s){ return  strpos($s, 'ltc') !== false; });
+
+        $symbols = $symbols->toArray();
         foreach($balances as $balance)
         {
             $detalleBalance = [];
@@ -76,22 +90,30 @@ class BittrexCrawlerService implements ICrawlerService
                 $currency = $balance->Currency;
                 try{
                     
-                    if($currency != 'BTC') 
+                    if($currency != 'BTC' && $currency != 'USD') 
                     {
-                        $mkt = $summaries->first(function($s)use($currency){ return $s->MarketName == 'BTC-'.$currency; });
 
-                        $last        = $mkt->Last;
-                        $bid         = $mkt->Bid;
-                        $ask         = $mkt->Ask;
+                        $symbol = $currency.'BTC';
+                        $mkt = $bitfinexClient->get_ticker($symbol);
+
+                        $last        = $mkt['last_price'];
+                        $bid         = $mkt['bid'];
+                        $ask         = $mkt['ask'];
                         $mean        = ( $last + $bid + $ask ) / 3;
                         $mBtcMean    = $mean * 1000;
                         $dollarValue = $mean * $btcMean;
                     }
-                    else
+                    else if($currency == 'BTC')
                     {
                         $mean        = 1;
                         $mBtcMean    = 1000;
                         $dollarValue = $btcMean;
+                    }
+                    else if($currency == 'USD')
+                    {
+                        $mean = 1 / $btcMean;
+                        $dollarValue = 1;
+                        $mBtcMean = $mean * 1000;
                     }
                     
                     $mBtcMean    = $this->toFixed($mBtcMean);
@@ -125,8 +147,8 @@ class BittrexCrawlerService implements ICrawlerService
     
     public function GetAllAssetsVersusBtcWithMarketData()
     {
-        $bittrex = $this->GetBittrex();
-        $markets = $bittrex->getMarketSummaries()->result;
+/*        $bitfinex = $this->GetBitfinex();
+        $markets = $bitfinex->getMarketSummaries()->result;
         
         $result = [];
         
@@ -144,12 +166,14 @@ class BittrexCrawlerService implements ICrawlerService
         $result[] = [ 'code' => 'BTC', 'VALOR_MBTC' => 1000, 'VALOR_USDT' => $valorBtc ];
         
         return $result;
+        */
+        throw new BadMethodCallException("Not implemented");
     }
     
     public function GetAllAssetsVersusBtc()
     {
-        $bittrex = $this->GetBittrex();
-        $markets = $bittrex->getMarkets()->result;
+        /*$bitfinex = $this->GetBitfinex();
+        $markets = $bitfinex->getMarkets()->result;
         
         $result = [];
         
@@ -163,7 +187,8 @@ class BittrexCrawlerService implements ICrawlerService
         
         $result[] = [ 'code' => 'BTC', 'description' => 'Bitcoin' ];
         
-        return $result;
+        return $result; */
+        throw new BadMethodCallException("Not implemented");
     }
     
     private function toFixed($number)

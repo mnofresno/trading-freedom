@@ -2,8 +2,14 @@
     <ion-content class="padding">
         <ion-refresher
             pulling-text="Obtener nuevos balances..."
-            on-refresh="ctrl.GetBalances()">
+            on-refresh="ctrl.GetDefaultBalances()">
         </ion-refresher>
+
+        <div class="row">
+          <div class="col valores-mercado">
+            {{ctrl.Balances.exchange.description}}
+          </div>
+        </div>
         <div class="row">
             <div class="col valores-mercado">
                 <div class="list card">
@@ -48,7 +54,7 @@
                     </a>
                 </div>
             </div>
-        </div>  
+        </div>
         <div class="row">
             <div class="col">
                 <div class="card">
@@ -72,7 +78,7 @@
                         </div>
                         <div class="row">
                             <div class="col col-50">
-                                U$S/BTC: 
+                                U$S/BTC:
                             </div>
                             <div class="col col-50">
                                 {{ ctrl.Balances.VALOR_BTC_USD }}
@@ -82,9 +88,9 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" ng-repeat="exchange in ctrl.exchanges">
             <div class="col col-100">
-                <button class="button button-royal button-fullwidth" ng-click="ctrl.GetBalances()">Update</button>
+                <button class="button button-royal button-fullwidth" ng-click="ctrl.GetBalances(exchange)">Update {{exchange.code}}</button>
             </div>
         </div>
     </ion-content>

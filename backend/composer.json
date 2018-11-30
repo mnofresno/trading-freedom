@@ -1,7 +1,7 @@
 {
-    "name": "laravel/laravel",
-    "description": "The Laravel Framework.",
-    "keywords": ["framework", "laravel"],
+    "name": "trading-freedom",
+    "description": "The PHP trading helper backend API",
+    "keywords": ["cryptocurrencies", "wallets", "balances", "exchanges"],
     "license": "MIT",
     "type": "project",
     "require": {
@@ -9,6 +9,7 @@
         "barryvdh/laravel-cors": "^0.10.1",
         "laravel/framework": "5.4.*",
         "laravel/tinker": "~1.0",
+        "mariodian/bitfinex-api-php": "master@dev",
         "messerli90/bittrex": "dev-master",
         "tymon/jwt-auth": "^0.5.12"
     },
@@ -50,5 +51,19 @@
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true
-    }
+    },
+    "repositories":[
+        {
+            "type": "package",
+            "package" : {
+                "name": "mariodian/bitfinex-api-php",
+                "version": "master",
+                "source": {
+                    "url": "https://github.com/mariodian/bitfinex-api-php.git",
+                    "type": "git",
+                    "reference": "master"
+                }
+            }
+        }
+    ]
 }

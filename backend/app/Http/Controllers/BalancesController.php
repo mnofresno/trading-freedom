@@ -7,19 +7,23 @@ use Illuminate\Routing\Controller as BaseController;
 use Illuminate\Foundation\Validation\ValidatesRequests;
 use Illuminate\Foundation\Auth\Access\AuthorizesRequests;
 
-use App\Services\BittrexCrawlerService as BittrexCrawler;
+use App\Services\MultiCrawlerService;
+use App\Models\ExchangeProvider;
 
 class BalancesController extends Controller
 {
-    private $bittrexCrawler;
+    private $crawler;
     
-    public function __construct(BittrexCrawler $bittrexCrawler)
+    public function __construct(MultiCrawlerService $crawler)
     {
-        $this->bittrexCrawler = $bittrexCrawler;
+        $this->crawler = $crawler;
     }
     
-    public function index()
+    public function show($id)
     {
-        return $this->bittrexCrawler->GetAllBalances($this->getCurrentUser()->id);
+        $exchange = ExchangeProvider::find($id);
+        $output = $this->crawler->GetAllBalances($this->getCurrentUser()->id, $exchange->code);
+        $output['exchange'] = $exchange;
+        return $output;
     }
 }

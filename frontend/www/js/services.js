@@ -3,45 +3,45 @@ angular.module('trading-freedom.services', [])
 .service('$localStorage', function($window)
 {
     var self = this;
-    
+
     self.set = function(key, value)
     {
-        if (typeof(value) === 'string') 
+        if (typeof(value) === 'string')
         {
             $window.localStorage[key] = value;
         }
-        else 
+        else
         {
             $window.localStorage[key] = JSON.stringify(value);
         }
     };
-    
+
     self.get = function(key)
     {
         var value = $window.localStorage[key];
-        
+
         if (value === undefined || value === 'undefined') return undefined;
-        
-        try 
+
+        try
         {
             return JSON.parse(value);
-        } 
-        catch (e) 
+        }
+        catch (e)
         {
             return value;
-        }            
+        }
     };
-    
-    self.has = function(key) 
+
+    self.has = function(key)
     {
         return $window.localStorage[key] !== undefined;
     };
-    
-    self.delete = function(key) 
+
+    self.delete = function(key)
     {
         $window.localStorage.removeItem(key);
     };
-    
+
     return self;
 })
 
@@ -99,13 +99,13 @@ angular.module('trading-freedom.services', [])
     var self = function(config)
     {
         config.headers = { 'X-Requested-With' : 'XMLHttpRequest' };
-     
+
         if(AuthService.isAuthed())
         {
             var token = AuthService.getToken();
             config.headers['Authorization'] = 'bearer ' + token;
         }
-        
+
         $http(config).then(function(response)
         {
             config.success(response.data);
@@ -113,47 +113,47 @@ angular.module('trading-freedom.services', [])
         {
             if(400 < response.status < 420)
             {
-                AuthService.clear();
+                //AuthService.clear();
             }
             if(config.error) config.error(response.data ? response.data : ["No pudo conectarse con el servidor"]);
         });
     };
-    
+
     return self;
 })
 
 .service('AuthService', function($localStorage, $rootScope)
 {
     var self = this;
-    
+
     self.isAuthed = function()
     {
         return $localStorage.has('user_token');
     };
-    
+
     self.getToken = function()
     {
         if(self.isAuthed()) return $localStorage.get('user_token');
     };
-    
+
     self.setToken = function(token)
     {
         $localStorage.set('user_token', token);
     };
-    
+
     self.clear = function()
     {
         $rootScope.$broadcast('unauthorized');
         $localStorage.delete('user_token');
     };
-    
+
     return self;
 })
 
 .service('LoginService', function(http, AuthService, ENV)
 {
     var self = this;
-    
+
     self.Login = function(credentials, successCallback, errorCallback)
     {
         var successLogin = function(data)
@@ -161,21 +161,27 @@ angular.module('trading-freedom.services', [])
             AuthService.setToken(data.token);
             successCallback();
         };
-        
+
         http({ data: credentials, url: ENV.endpoint + 'auth/login', method: 'POST', success: successLogin, error: errorCallback })
     };
-    
+
     return self;
 })
 
 .service('CrawlerService', function(http, ENV)
 {
     var self = this;
-    
-    self.GetBalances = function(callback)
+
+    self.GetExchanges = function(callback)
     {
-        http({ url: ENV.endpoint + 'balances', success: callback });
+        http({ url: ENV.endpoint + 'exchanges', success: callback });
     };
-    
+
+    self.GetBalances = function(exchange, callback)
+    {
+      exchangeId = exchange ? exchange.id : 1;
+      http({ url: ENV.endpoint + 'balances/' +  exchangeId, success: callback });
+    };
+
     return self;
 });
