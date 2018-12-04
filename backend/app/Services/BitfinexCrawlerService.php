@@ -8,15 +8,11 @@ use SebastianBergmann\RecursionContext\InvalidArgumentException;
 
 require(__DIR__."/../../vendor/mariodian/bitfinex-api-php/Bitfinex.php");
 
-class BitfinexCrawlerService implements ICrawlerService
+class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerService
 {
-    private $user;
-    private $exchangeProvider;
-    
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)
     {
-        $this->exchangeProvider = $exchangeProvider;
-        $this->user = $user;
+        parent::__construct($user, $exchangeProvider);
     }
     
     private function GetBitfinex($user_id = null)

@@ -2,15 +2,18 @@
 
 namespace App\Services;
 
-use Messerli90\Bittrex\Bittrex;
 use App\Models\User as User;
 use App\Models\ExchangeProvider as ExchangeProvider;
 
-class BittrexCrawlerService extends BaseCrawlerService implements ICrawlerService
+abstract class BaseCrawlerService
 {
+    protected $user;
+    protected $exchangeProvider;
+    
     public function __construct(User $user, ExchangeProvider $exchangeProvider)
     {
-        parent::__construct($user, $exchangeProvider);
+        $this->exchangeProvider = $exchangeProvider;
+        $this->user = $user;
     }
     
     private function GetBittrex($user_id = null)

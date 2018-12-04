@@ -78,6 +78,8 @@ angular.module('trading-freedom.controllers', [])
 
     self.exchanges = [];
 
+    self.selectedExchange = {id: 1};
+
     CrawlerService.GetExchanges(function(data)
     {
         self.exchanges = data;
@@ -85,6 +87,7 @@ angular.module('trading-freedom.controllers', [])
 
     self.GetBalances = function(exchange)
     {
+        self.selectedExchange = exchange;
         CrawlerService.GetBalances(exchange, function(result)
         {
             self.Balances = result;
@@ -94,7 +97,7 @@ angular.module('trading-freedom.controllers', [])
 
     self.GetDefaultBalances = function()
     {
-        self.GetBalances({id: 1});
+        self.GetBalances(self.selectedExchange);
     };
 
     self.GetDefaultBalances();
