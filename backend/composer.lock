@@ -4,8 +4,8 @@
         "Read more about it at https://getcomposer.org/doc/01-basic-usage.md#composer-lock-the-lock-file",
         "This file is @generated automatically"
     ],
-    "hash": "c81ac0eac844575dc40722f5e9335eb1",
-    "content-hash": "7ca5b7359959d12c24a7b55798bcf682",
+    "hash": "765b8a7c0728f9007b314a7b9ae590ad",
+    "content-hash": "0cec69bce14a5031195f87c4fbbea50c",
     "packages": [
         {
             "name": "barryvdh/laravel-cors",
@@ -395,6 +395,44 @@
                 "url"
             ],
             "time": "2017-03-20 17:10:46"
+        },
+        {
+            "name": "htunlogic/laravel-poloniex",
+            "version": "v1.1.2",
+            "source": {
+                "type": "git",
+                "url": "https://github.com/htunlogic/laravel-poloniex.git",
+                "reference": "8223ac41a00098ea6bd2dbc528efce4ba39cce1b"
+            },
+            "dist": {
+                "type": "zip",
+                "url": "https://api.github.com/repos/htunlogic/laravel-poloniex/zipball/8223ac41a00098ea6bd2dbc528efce4ba39cce1b",
+                "reference": "8223ac41a00098ea6bd2dbc528efce4ba39cce1b",
+                "shasum": ""
+            },
+            "require": {
+                "ext-curl": "*",
+                "laravel/framework": ">=5.3",
+                "php": ">=7.0.0"
+            },
+            "type": "library",
+            "autoload": {
+                "psr-4": {
+                    "Htunlogic\\Poloniex\\": "src/"
+                }
+            },
+            "notification-url": "https://packagist.org/downloads/",
+            "license": [
+                "MIT"
+            ],
+            "authors": [
+                {
+                    "name": "Tibor Hudik",
+                    "email": "tibor@hudik.de"
+                }
+            ],
+            "description": "Poloniex API wrapper for Laravel",
+            "time": "2017-01-23 18:58:38"
         },
         {
             "name": "jakub-onderka/php-console-color",

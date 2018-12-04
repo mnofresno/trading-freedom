@@ -5,38 +5,40 @@ namespace App\Services;
 use App\Models\User as User;
 use App\Models\ExchangeProvider as ExchangeProvider;
 use SebastianBergmann\RecursionContext\InvalidArgumentException;
+use Htunlogic\Poloniex\Poloniex;
+use Htunlogic\Poloniex\Client;
+use Illuminate\Support\Facades\Config;
 
-require(__DIR__."/../../vendor/mariodian/bitfinex-api-php/Bitfinex.php");
-
-class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerService
+class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerService
 {
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)
     {
         parent::__construct($user, $exchangeProvider);
     }
     
-    private function GetBitfinex($user_id = null)
+    private function GetPoloniex($user_id = null)
     {
         $currentUser = $this->user->find($user_id);
+     
+        $poloniexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'POLONIEX')->firstOrFail()->id;
         
-        $bitfinexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'BITFINEX')->firstOrFail()->id;
-        
-        $userBittrexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $bitfinexExchangeProviderId)->firstOrFail();
-                     
-        return new \Bitfinex($userBittrexKey->api_key, $userBittrexKey->api_secret);
+        $userPoloniexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $poloniexExchangeProviderId)->firstOrFail();
+        $auth = ['key' => $userPoloniexKey->api_key,'secret' => $userPoloniexKey->api_secret ];
+        $urls = Config::get('poloniex.urls');
+        return new Client($auth, $urls);  
     }
 
     public function GetBalances($user_id = null)
     {
-        $bitfinexClient = $this->GetBitfinex($user_id);
-        $balances = $bitfinexClient->get_balances();
+        $poloniexClient = $this->GetPoloniex($user_id);
+        $balances = $poloniexClient->getBalances();
         return collect($balances)->filter(function($v)
             {
-                return $v["amount"] > 0;
-            })->map(function($item)
+                return $v > 0;
+            })->map(function($value, $key)
             {
-                $balance = ['Currency' => strtoupper($item['currency']),
-                            'Balance' => $item['amount'],
+                $balance = ['Currency' => $key,
+                            'Balance' => $value,
                             'Available' => '',
                             'Pending' => '',
                             'CryptoAddress' => ''];
@@ -46,22 +48,21 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
 
     public function GetBitcoinDollarMarket($user_id)
     {
-        $bitfinexClient = $this->GetBitfinex($user_id);
+        $poloniexClient = $this->GetPoloniex($user_id);
         
-        $btcMkt = $bitfinexClient->get_ticker('BTCUSD');
+        $btcMkt = $poloniexClient->getTicker('USDT_BTC');
         
-        $btcLast = $btcMkt['last_price'];
-        $btcBid  = $btcMkt['bid'];
-        $btcAsk  = $btcMkt['ask'];
+        $btcLast = $btcMkt['last'];
+        $btcBid  = $btcMkt['highestBid'];
+        $btcAsk  = $btcMkt['lowestAsk'];
         $btcMean = ( $btcLast + $btcBid + $btcAsk ) / 3;
         
         return $btcMean;
-        
     }
     
     public function GetAllBalances($user_id)
     {    
-        $bitfinexClient = $this->GetBitfinex($user_id);
+        $poloniexClient = $this->GetPoloniex($user_id);
         
         $btcMean = $this->GetBitcoinDollarMarket($user_id);
         
@@ -71,6 +72,9 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         
         $saldoTotalMBTC = 0;
         $saldoTotalUSD  = 0;
+        
+        $tickers = $poloniexClient->getTickers();
+
         foreach($balances as $balance)
         {
             $detalleBalance = [];
@@ -84,7 +88,7 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
                     {
 
                         $symbol = $currency.'BTC';
-                        $mkt = $bitfinexClient->get_ticker($symbol);
+                        $mkt = $tickers[$symbol];
 
                         $last        = $mkt['last_price'];
                         $bid         = $mkt['bid'];
