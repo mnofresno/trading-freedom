@@ -11,10 +11,12 @@ class MultiCrawlerService
 
     public function __construct(
         BitfinexCrawlerService $bitfinexCrawler,
-        BittrexCrawlerService $bittrexCrawler)
+        BittrexCrawlerService $bittrexCrawler,
+        PoloniexCrawlerService $poloniexCrawler)
     {
         $this->crawlers['BITTREX'] = $bittrexCrawler;
         $this->crawlers['BITFINEX'] = $bitfinexCrawler;
+        $this->crawlers['POLONIEX'] = $poloniexCrawler;
     }
 
     public function GetAllBalances($user_id, $exchange = 'BITTREX')
