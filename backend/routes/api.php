@@ -1,5 +1,13 @@
 <?php
 
+// This is a workarround in order to circunvent
+// a bug in laravel which makes it incompatible with PHP > 7.2
+if (version_compare(PHP_VERSION, '7.2.0', '>=')) {
+    // Ignores notices and reports all other kinds... and warnings
+    error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+    // error_reporting(E_ALL ^ E_WARNING); // Maybe this is enough
+}
+
 use Illuminate\Http\Request;
 
 /*

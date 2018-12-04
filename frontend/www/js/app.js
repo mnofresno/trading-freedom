@@ -7,8 +7,11 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config', 'trading-freedom.interceptors'])
 
-.run(function($ionicPlatform, $rootScope, $state, AuthService, $ionicLoading)
+.run(function($ionicPlatform, $rootScope, $state, AuthService, $ionicLoading, $locale)
 {
+    $locale.NUMBER_FORMATS.GROUP_SEP = ".";
+    $locale.NUMBER_FORMATS.DECIMAL_SEP = ",";
+
     $ionicPlatform.ready(function()
     {
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
@@ -28,7 +31,7 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
         {
             $state.go('login');
         });
-        
+
         if (AuthService.isAuthed())
         {
             $state.go('tab.balance');
@@ -38,7 +41,7 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
             $state.go('login');
         }
     });
-        
+
     $rootScope.$on('loading:show', function()
     {
         $ionicLoading.show(
@@ -48,7 +51,7 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
         });
     });
 
-    $rootScope.$on('loading:hide', function() 
+    $rootScope.$on('loading:hide', function()
     {
         $ionicLoading.hide();
     });
@@ -118,7 +121,7 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
       }
     }
   })
-  
+
   .state('login', {
     url: '/login',
     cache: false,
@@ -133,7 +136,7 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
 
 })
 
-.config(function($httpProvider) 
+.config(function($httpProvider)
 {
 	$httpProvider.interceptors.push('LoadingInterceptor');
 });

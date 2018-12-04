@@ -84,15 +84,15 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
                 $currency = $balance->Currency;
                 try{
                     
-                    if($currency != 'BTC' && $currency != 'USD') 
+                    if($currency != 'BTC' && $currency != 'USDT') 
                     {
 
-                        $symbol = $currency.'BTC';
+                        $symbol = $currency.'_BTC';
                         $mkt = $tickers[$symbol];
 
-                        $last        = $mkt['last_price'];
-                        $bid         = $mkt['bid'];
-                        $ask         = $mkt['ask'];
+                        $last        = $mkt['last'];
+                        $bid         = $mkt['highestBid'];
+                        $ask         = $mkt['lowestAsk'];
                         $mean        = ( $last + $bid + $ask ) / 3;
                         $mBtcMean    = $mean * 1000;
                         $dollarValue = $mean * $btcMean;
@@ -103,7 +103,7 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
                         $mBtcMean    = 1000;
                         $dollarValue = $btcMean;
                     }
-                    else if($currency == 'USD')
+                    else if($currency == 'USDT')
                     {
                         $mean = 1 / $btcMean;
                         $dollarValue = 1;

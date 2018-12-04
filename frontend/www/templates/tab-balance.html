@@ -65,7 +65,7 @@
                                 TOTAL U$S:
                             </div>
                             <div class="col col-50">
-                                {{ ctrl.Balances.TOTAL_USD }}
+                                {{ ctrl.Balances.TOTAL_USD | number:4 }}
                             </div>
                         </div>
                         <div class="row">
@@ -81,7 +81,7 @@
                                 U$S/BTC:
                             </div>
                             <div class="col col-50">
-                                {{ ctrl.Balances.VALOR_BTC_USD }}
+                                {{ ctrl.Balances.VALOR_BTC_USD | number:4 }}
                             </div>
                         </div>
                     </a>
