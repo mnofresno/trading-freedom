@@ -1,11 +1,14 @@
 <?php
+use Illuminate\Support\Facades\Config;
 
-// This is a workarround in order to circunvent
-// a bug in laravel which makes it incompatible with PHP > 7.2
-if (version_compare(PHP_VERSION, '7.2.0', '>=')) {
-    // Ignores notices and reports all other kinds... and warnings
-    error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
-    // error_reporting(E_ALL ^ E_WARNING); // Maybe this is enough
+if(!Config::get('app.debug')) {
+    // This is a workarround in order to circunvent
+    // a bug in laravel which makes it incompatible with PHP > 7.2
+    if (version_compare(PHP_VERSION, '7.2.0', '>=')) {
+        // Ignores notices and reports all other kinds... and warnings
+        error_reporting(E_ALL ^ E_NOTICE ^ E_WARNING);
+        // error_reporting(E_ALL ^ E_WARNING); // Maybe this is enough
+    }
 }
 
 use Illuminate\Http\Request;
@@ -31,5 +34,5 @@ Route::post('auth/register', 'Auth\LoginController@register');
 Route::group(['middleware' => 'jwt.auth'], function ()
 {
     Route::resource('balances', 'BalancesController');
-    Route::resource('exchanges', 'ExchangesProvidersController');
+    Route::resource('exchanges/own', 'OwnExchangeProvidersController');
 });

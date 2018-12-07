@@ -21,10 +21,23 @@ angular.module('trading-freedom.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function($scope) {
-  $scope.settings = {
-    enableFriends: true
+.controller('AccountCtrl', function ($localStorage, CrawlerService) {
+  var self = this;
+  self.exchanges = [];
+  self.selectedExchange = null;
+
+  CrawlerService.GetExchanges(function (data) {
+    self.exchanges = data;
+    self.selectedExchange = $localStorage.has('defaultExchangeId')
+      ? $localStorage.get('defaultExchangeId')
+      : self.exchanges[0];
+  });
+
+  self.selectionChanged = function() {
+    $localStorage.set('defaultExchangeId', self.selectedExchange.id);
   };
+
+  return self;
 })
 
 .controller('LoginCtrl', function(LoginService, $state)
@@ -70,7 +83,7 @@ angular.module('trading-freedom.controllers', [])
     return self;
 })
 
-.controller('BalanceCtrl', function(CrawlerService, $scope)
+.controller('BalanceCtrl', function(CrawlerService, $scope, $localStorage)
 {
     var self = this;
 
@@ -78,12 +91,7 @@ angular.module('trading-freedom.controllers', [])
 
     self.exchanges = [];
 
-    self.selectedExchange = {id: 1};
-
-    CrawlerService.GetExchanges(function(data)
-    {
-        self.exchanges = data;
-    });
+    self.selectedExchange = null;
 
     self.GetBalances = function(exchange)
     {
@@ -97,10 +105,21 @@ angular.module('trading-freedom.controllers', [])
 
     self.GetDefaultBalances = function()
     {
-        self.GetBalances(self.selectedExchange);
+      self.selectedExchange = {
+        id: $localStorage.has('defaultExchangeId')
+          ? $localStorage.get('defaultExchangeId')
+          : self.exchanges[0].id
+      };
+      self.GetBalances(self.selectedExchange);
     };
 
-    self.GetDefaultBalances();
+    $scope.$on('$ionicView.beforeEnter', function(){
+      CrawlerService.GetExchanges(function (data) {
+        self.exchanges = data;
+        self.GetDefaultBalances();
+      });
+
+    });
 
     return self;
 });

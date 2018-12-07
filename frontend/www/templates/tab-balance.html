@@ -19,17 +19,17 @@
                             <div class="col col-50">
                                 <div class="row">
                                     <div class="col col-100">
-                                        {{ item.MONEDA }} ({{ item.SALDO }})
+                                        {{ item.MONEDA }} ({{ item.SALDO | number:4 }})
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col col-100">
-                                        U$: <strong>{{ item.SALDO_USDT }}</strong>
+                                        U$: <strong>{{ item.SALDO_USDT | number:4 }}</strong>
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col col-100">
-                                        mBTC: <strong>{{ item.SALDO_MBTC }}</strong>
+                                        mBTC: <strong>{{ item.SALDO_MBTC | number:4 }}</strong>
                                     </div>
                                 </div>
                             </div>
@@ -41,12 +41,12 @@
                                 </div>
                                 <div class="row">
                                     <div class="col col-100">
-                                        U$: {{ item.VALOR_USDT }}
+                                        U$: {{ item.VALOR_USDT | number:4 }}
                                     </div>
                                 </div>
                                 <div class="row">
                                     <div class="col col-100">
-                                        mBTC: {{ item.VALOR_MBTC }}
+                                        mBTC: {{ item.VALOR_MBTC | number:4 }}
                                     </div>
                                 </div>
                             </div>
@@ -73,7 +73,7 @@
                                 TOTAL MBTC:
                             </div>
                             <div class="col col-50">
-                                {{ ctrl.Balances.TOTAL_MBTC }}
+                                {{ ctrl.Balances.TOTAL_MBTC | number:4 }}
                             </div>
                         </div>
                         <div class="row">

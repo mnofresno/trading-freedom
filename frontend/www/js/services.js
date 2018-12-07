@@ -174,7 +174,7 @@ angular.module('trading-freedom.services', [])
 
     self.GetExchanges = function(callback)
     {
-        http({ url: ENV.endpoint + 'exchanges', success: callback });
+        http({ url: ENV.endpoint + 'exchanges/own', success: callback });
     };
 
     self.GetBalances = function(exchange, callback)
