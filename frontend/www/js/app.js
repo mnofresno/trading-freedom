@@ -5,7 +5,7 @@
 // the 2nd parameter is an array of 'requires'
 // 'starter.services' is found in services.js
 // 'starter.controllers' is found in controllers.js
-angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config', 'trading-freedom.interceptors'])
+angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config', 'trading-freedom.interceptors', 'ngLodash'])
 
 .run(function($ionicPlatform, $rootScope, $state, AuthService, $ionicLoading, $locale)
 {

@@ -5,7 +5,7 @@
         Enable Friends
     </ion-toggle>
     </ion-list>
-    <ion-item>
+    <ion-item class="text-center">
       <label>Default exchange</label>
       <select class="custom-select" ng-model="ctrl.selectedExchange" ng-change="ctrl.selectionChanged()"
         ng-options="option.description for option in ctrl.exchanges track by option.id" >

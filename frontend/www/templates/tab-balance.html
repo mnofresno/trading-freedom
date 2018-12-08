@@ -7,12 +7,13 @@
 
         <div class="row">
           <div class="col valores-mercado">
+            <span ng-show="!ctrl.Balances.exchange.description">Obteniendo información...</span>
             {{ctrl.Balances.exchange.description}}
           </div>
         </div>
         <div class="row">
             <div class="col valores-mercado">
-                <div class="list card">
+                <div class="list card" ng-show="ctrl.Balances.assets">
                     <a href="#" class="item item-icon-left" ng-repeat="item in ctrl.Balances.assets">
                         <i class="icon ion-home"></i>
                         <div class="row">
@@ -55,7 +56,7 @@
                 </div>
             </div>
         </div>
-        <div class="row">
+        <div class="row" ng-show="ctrl.Balances.TOTAL_USD">
             <div class="col">
                 <div class="card">
                     <a href="#" class="item item-icon-left">

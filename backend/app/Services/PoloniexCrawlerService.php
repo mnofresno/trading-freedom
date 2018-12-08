@@ -82,12 +82,10 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
             if($saldo > 0)
             {
                 $currency = $balance->Currency;
-                try{
-                    
+                try{             
                     if($currency != 'BTC' && $currency != 'USDT') 
                     {
-
-                        $symbol = $currency.'_BTC';
+                        $symbol = 'BTC_'.$currency;
                         $mkt = $tickers[$symbol];
 
                         $last        = $mkt['last'];
