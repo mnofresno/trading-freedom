@@ -1,10 +1,5 @@
 <ion-view view-title="Account">
   <ion-content>
-    <ion-list>
-    <ion-toggle  ng-model="settings.enableFriends">
-        Enable Friends
-    </ion-toggle>
-    </ion-list>
     <ion-item class="text-center">
       <label>Default exchange</label>
       <select class="custom-select" ng-model="ctrl.selectedExchange" ng-change="ctrl.selectionChanged()"
@@ -13,7 +8,7 @@
     </ion-item>
     <div class="row">
       <div class="col col-100">
-        <button class="button button-royal button-fullwidth" ng-click="ctrl.AddKey()">Add new key</button>
+        <button class="button button-balanced button-fullwidth" ng-click="ctrl.AddKey()">{{ctrl.addKeyButtonTitle}}</button>
       </div>
     </div>
       <div class="row" ng-if="ctrl.keyToAdd">

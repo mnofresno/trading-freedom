@@ -28,6 +28,8 @@ angular.module('trading-freedom.controllers', [])
   self.selectedExchange = null;
   self.keyToAdd = null;
 
+  self.addKeyButtonTitle = 'Add new key';
+
   self.onload = function() {
     self.keyToAdd = null;
     CrawlerService.GetOwnExchanges(function (data) {
@@ -63,7 +65,17 @@ angular.module('trading-freedom.controllers', [])
       });
     }
 
-    self.keyToAdd = { api_key: '', api_secret: '', exchange_provider_id: null };
+    if (self.keyToAdd) {
+      self.keyToAdd = null;
+      self.addKeyButtonTitle = 'Add new key';
+    } else {
+      self.keyToAdd = {
+        api_key: '',
+        api_secret: '',
+        exchange_provider_id: null
+      };
+      self.addKeyButtonTitle = 'Cancel';
+    }
   };
 
   self.SaveKey = function()
