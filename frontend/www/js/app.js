@@ -128,6 +128,14 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
     templateUrl: 'templates/login.html',
     controller: 'LoginCtrl',
     controllerAs: 'ctrl'
+  })
+
+  .state('signup', {
+    url: '/signup',
+    cache: false,
+    templateUrl: 'templates/signup.html',
+    controller: 'SignUpCtrl',
+    controllerAs: 'ctrl'
   });
 
   // if none of the above states are matched, use this as the fallback

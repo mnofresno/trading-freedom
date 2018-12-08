@@ -21,22 +21,83 @@ angular.module('trading-freedom.controllers', [])
   $scope.chat = Chats.get($stateParams.chatId);
 })
 
-.controller('AccountCtrl', function ($localStorage, CrawlerService, lodash, $scope) {
+.controller('AccountCtrl', function ($localStorage, CrawlerService, lodash, $scope, AuthService, KeysService) {
   var self = this;
+  self.ownExchanges = [];
   self.exchanges = [];
   self.selectedExchange = null;
+  self.keyToAdd = null;
 
-  $scope.$on('$ionicView.beforeEnter', function () {
+  self.onload = function() {
+    self.keyToAdd = null;
     CrawlerService.GetOwnExchanges(function (data) {
-      self.exchanges = data;
-      self.selectedExchange = $localStorage.has('defaultExchangeId')
-        ? lodash.find(self.exchanges, {id:$localStorage.get('defaultExchangeId')})
-        : self.exchanges[0];
+      self.ownExchanges = data.length ? data : [{
+        id: null,
+        description: '-no keys configured-'
+      }];
+      self.selectedExchange = $localStorage.has('defaultExchangeId') ?
+        lodash.find(self.ownExchanges, {
+          id: $localStorage.get('defaultExchangeId')
+        }) :
+        self.ownExchanges[0];
     });
-  });
+  };
 
-  self.selectionChanged = function() {
+  $scope.$on('$ionicView.beforeEnter', self.onload);
+
+  self.selectionChanged = function()
+  {
     $localStorage.set('defaultExchangeId', self.selectedExchange.id);
+  };
+
+  self.Logout = function()
+  {
+    AuthService.clear();
+  };
+
+  self.AddKey = function ()
+  {
+    if(self.exchanges.length === 0) {
+      CrawlerService.GetExchanges(function (data) {
+        self.exchanges = data;
+      });
+    }
+
+    self.keyToAdd = { api_key: '', api_secret: '', exchange_provider_id: null };
+  };
+
+  self.SaveKey = function()
+  {
+    KeysService.Save(self.keyToAdd, self.onload);
+  };
+
+  return self;
+})
+
+.controller('SignUpCtrl', function (LoginService, $state, http) {
+  var self = this;
+
+  self.newUser = {
+    name: '',
+    email: '',
+    password: '',
+    repeatPassword: ''
+  };
+
+  self.isValid = function()
+  {
+    return self.newUser.name &&
+      self.newUser.email &&
+      self.newUser.password;
+  };
+
+  self.Register = function()
+  {
+    if(self.newUser.password !== self.newUser.repeatPassword)
+    {
+      return;
+    }
+    LoginService.Register(self.newUser, () => $state.go('tab.balance'));
   };
 
   return self;
@@ -82,12 +143,19 @@ angular.module('trading-freedom.controllers', [])
         });
     };
 
+    self.Register = function()
+    {
+      $state.go('signup');
+    };
+
     return self;
 })
 
 .controller('BalanceCtrl', function(CrawlerService, $scope, $localStorage)
 {
     var self = this;
+
+    self.loadingMessage = "Getting information...";
 
     self.Balances = { balances: [] };
 
@@ -98,6 +166,12 @@ angular.module('trading-freedom.controllers', [])
     self.GetBalances = function(exchange)
     {
         self.selectedExchange = exchange;
+
+        if(!exchange) {
+          self.loadingMessage = "No keys configured";
+          return;
+        }
+
         CrawlerService.GetBalances(exchange, function(result)
         {
             self.Balances = result;
@@ -107,11 +181,13 @@ angular.module('trading-freedom.controllers', [])
 
     self.GetDefaultBalances = function()
     {
-      self.selectedExchange = {
-        id: $localStorage.has('defaultExchangeId')
-          ? $localStorage.get('defaultExchangeId')
-          : self.exchanges[0].id
-      };
+      self.selectedExchange = self.exchanges.length > 0
+        ? {
+          id: $localStorage.has('defaultExchangeId')
+            ? $localStorage.get('defaultExchangeId')
+            : self.exchanges[0].id
+        }
+        : null;
       self.GetBalances(self.selectedExchange);
     };
 
@@ -120,7 +196,6 @@ angular.module('trading-freedom.controllers', [])
         self.exchanges = data;
         self.GetDefaultBalances();
       });
-
     });
 
     return self;

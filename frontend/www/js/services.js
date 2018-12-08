@@ -165,6 +165,21 @@ angular.module('trading-freedom.services', [])
         http({ data: credentials, url: ENV.endpoint + 'auth/login', method: 'POST', success: successLogin, error: errorCallback })
     };
 
+    self.Register = function(newUser, successCallback, errorCalback)
+    {
+      var successLogin = function (data) {
+        self.Login(newUser, successCallback, errorCalback);
+      };
+
+      http({
+        data: newUser,
+        url: ENV.endpoint + 'auth/register',
+        method: 'POST',
+        success: successLogin,
+        error: errorCalback
+      })
+    };
+
     return self;
 })
 
@@ -193,4 +208,22 @@ angular.module('trading-freedom.services', [])
     };
 
     return self;
+})
+
+.service('KeysService', function(http, ENV)
+{
+  var self = this;
+
+  self.Save = function (newKey, successCallback, errorCalback)
+  {
+    http({
+      data: newKey,
+      url: ENV.endpoint + 'apikeys',
+      method: 'POST',
+      success: successCallback,
+      error: errorCalback
+    })
+  };
+
+  return self;
 });

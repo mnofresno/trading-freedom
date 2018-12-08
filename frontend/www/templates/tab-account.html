@@ -8,8 +8,39 @@
     <ion-item class="text-center">
       <label>Default exchange</label>
       <select class="custom-select" ng-model="ctrl.selectedExchange" ng-change="ctrl.selectionChanged()"
-        ng-options="option.description for option in ctrl.exchanges track by option.id" >
+        ng-options="option.description for option in ctrl.ownExchanges track by option.id" >
       </select>
     </ion-item>
+    <div class="row">
+      <div class="col col-100">
+        <button class="button button-royal button-fullwidth" ng-click="ctrl.AddKey()">Add new key</button>
+      </div>
+    </div>
+      <div class="row" ng-if="ctrl.keyToAdd">
+      <div class="col col-100">
+        <div class="list">
+          <ion-item class="text-center">
+            <label>Exchange</label>
+            <select class="custom-select" ng-model="ctrl.keyToAdd.exchange_provider_id" ng-options="option.id as option.description for option in ctrl.exchanges track by option.id">
+              <option value="" selected="selected">Choose</option>
+            </select>
+          </ion-item>
+          <label class="item item-input">
+            <span class="input-label">Key</span>
+            <input type="text" ng-model="ctrl.keyToAdd.api_key">
+          </label>
+          <label class="item item-input">
+            <span class="input-label">Secret</span>
+            <input type="text" ng-model="ctrl.keyToAdd.api_secret">
+          </label>
+          <button class="button button-royal button-fullwidth" ng-click="ctrl.SaveKey()">Save</button>
+        </div>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col col-100">
+        <button class="button button-royal button-fullwidth" ng-click="ctrl.Logout()">Logout</button>
+      </div>
+    </div>
   </ion-content>
 </ion-view>

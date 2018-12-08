@@ -6,8 +6,7 @@ use Illuminate\Routing\Controller as BaseController;
 use App\Models\ExchangeProvider;
 
 class OwnExchangeProvidersController extends Controller
-{
-    
+{    
     public function index()
     {
         $user = $this->getCurrentUser();

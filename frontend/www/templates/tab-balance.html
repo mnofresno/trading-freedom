@@ -7,7 +7,7 @@
 
         <div class="row">
           <div class="col valores-mercado">
-            <span ng-show="!ctrl.Balances.exchange.description">Obteniendo información...</span>
+            <span ng-show="!ctrl.Balances.exchange.description">{{ctrl.loadingMessage}}</span>
             {{ctrl.Balances.exchange.description}}
           </div>
         </div>
