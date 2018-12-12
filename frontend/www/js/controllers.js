@@ -28,7 +28,9 @@ angular.module('trading-freedom.controllers', [])
   self.selectedExchange = null;
   self.keyToAdd = null;
 
-  self.addKeyButtonTitle = 'Add new key';
+  self.addKeyButtonTitle = function() {
+    return self.keyToAdd ? 'Cancel' : 'Add new key';
+  };
 
   self.onload = function() {
     self.keyToAdd = null;
@@ -67,15 +69,18 @@ angular.module('trading-freedom.controllers', [])
 
     if (self.keyToAdd) {
       self.keyToAdd = null;
-      self.addKeyButtonTitle = 'Add new key';
     } else {
       self.keyToAdd = {
         api_key: '',
         api_secret: '',
         exchange_provider_id: null
       };
-      self.addKeyButtonTitle = 'Cancel';
     }
+  };
+
+  self.isValidKey = function()
+  {
+    return self.keyToAdd && self.keyToAdd.api_key && self.keyToAdd.api_secret && self.keyToAdd.exchange_provider_id;
   };
 
   self.SaveKey = function()
