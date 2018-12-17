@@ -8,33 +8,35 @@ use App\Models\ExchangeProvider as ExchangeProvider;
 
 class BittrexCrawlerService extends BaseCrawlerService implements ICrawlerService
 {
+    protected function getExchangeProviderCode()
+    {
+        return 'BITTREX';
+    }
+
     public function __construct(User $user, ExchangeProvider $exchangeProvider)
     {
         parent::__construct($user, $exchangeProvider);
     }
     
-    private function GetBittrex($user_id = null)
+    protected function getClientBalances($userId)
     {
-        if($user_id == null) return new Bittrex();
-        $currentUser = $this->user->find($user_id);
-        
-        $bittrexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'BITTREX')->firstOrFail()->id;
-        
-        $userBittrexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $bittrexExchangeProviderId)->firstOrFail();
-                     
-        return new Bittrex($userBittrexKey->api_key, $userBittrexKey->api_secret);
+        return $this->GetBittrex($userId)->getBalances()->result;
     }
 
-    public function GetBalances($user_id = null)
+    private function GetBittrex($userId = null)
     {
-        $bittrexClient = $this->GetBittrex($user_id);
-        $balances = $bittrexClient->getBalances()->result;
-        return collect($balances)->filter(function($v){ return $v->Balance > 0; });
+        $userKey = $this->getAuthKeys($userId);
+        return new Bittrex($userKey['key'], $userKey['secret']);
     }
 
-    private function GetBitcoinDollarMarket()
+    protected function getAmount($value)
     {
-        $bittrexClient = $this->GetBittrex();
+        return $value->Balance;
+    }
+    
+    private function GetBitcoinDollarMarket($userId)
+    {
+        $bittrexClient = $this->GetBittrex($userId);
         
         $btcMkt = $bittrexClient->getMarketSummary('USDT-BTC');
         
@@ -46,17 +48,16 @@ class BittrexCrawlerService extends BaseCrawlerService implements ICrawlerServic
         $btcMean = ( $btcLast + $btcBid + $btcAsk ) / 3;
         
         return $btcMean;
-        
     }
     
-    public function GetAllBalances($user_id)
+    public function GetAllBalances($userId)
     {    
-        $bittrexClient = $this->GetBittrex($user_id);
+        $bittrexClient = $this->GetBittrex($userId);
         $summaries = collect($bittrexClient->getMarketSummaries()->result);
         
-        $btcMean = $this->GetBitcoinDollarMarket();
+        $btcMean = $this->GetBitcoinDollarMarket($userId);
         
-        $balances = $this->GetBalances($user_id);
+        $balances = $this->GetBalances($userId);
         
         $outputBalances = [];
         
@@ -160,10 +161,5 @@ class BittrexCrawlerService extends BaseCrawlerService implements ICrawlerServic
         $result[] = [ 'code' => 'BTC', 'description' => 'Bitcoin' ];
         
         return $result;
-    }
-    
-    private function toFixed($number)
-    {
-        return number_format($number, 4, ".", "");
     }
 }

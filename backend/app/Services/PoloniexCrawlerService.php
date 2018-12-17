@@ -11,39 +11,42 @@ use Illuminate\Support\Facades\Config;
 
 class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerService
 {
+    protected function getExchangeProviderCode()
+    {
+        return 'POLONIEX';
+    }
+
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)
     {
         parent::__construct($user, $exchangeProvider);
     }
-    
-    private function GetPoloniex($user_id = null)
+
+    protected function getClientBalances($userId)
     {
-        $currentUser = $this->user->find($user_id);
-     
-        $poloniexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'POLONIEX')->firstOrFail()->id;
-        
-        $userPoloniexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $poloniexExchangeProviderId)->firstOrFail();
-        $auth = ['key' => $userPoloniexKey->api_key,'secret' => $userPoloniexKey->api_secret ];
+        return $this->GetPoloniex($userId)->getBalances();
+    }
+    
+    private function GetPoloniex($userId = null)
+    {
         $urls = Config::get('poloniex.urls');
-        return new Client($auth, $urls);  
+        return new Client($this->getAuthKeys($userId), $urls);  
     }
 
-    public function GetBalances($user_id = null)
+    protected function mapBalancesCallback($value, $key)
     {
-        $poloniexClient = $this->GetPoloniex($user_id);
-        $balances = $poloniexClient->getBalances();
-        return collect($balances)->filter(function($v)
-            {
-                return $v > 0;
-            })->map(function($value, $key)
-            {
-                $balance = ['Currency' => $key,
-                            'Balance' => $value,
-                            'Available' => '',
-                            'Pending' => '',
-                            'CryptoAddress' => ''];
-                return json_decode(json_encode($balance), FALSE);
-            });
+        $balance = [
+            'Currency' => $key,
+            'Balance' => $value,
+            'Available' => '',
+            'Pending' => '',
+            'CryptoAddress' => ''
+        ];
+        return json_decode(json_encode($balance), false);        
+    }
+
+    protected function getAmount($value)
+    {
+        return $value;
     }
 
     public function GetBitcoinDollarMarket($user_id)
@@ -181,10 +184,5 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         
         return $result; */
         throw new BadMethodCallException("Not implemented");
-    }
-    
-    private function toFixed($number)
-    {
-        return number_format($number, 4, ".", "");
     }
 }

@@ -10,38 +10,42 @@ require(__DIR__."/../../vendor/mariodian/bitfinex-api-php/Bitfinex.php");
 
 class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerService
 {
+    protected function getExchangeProviderCode()
+    {
+        return 'BITFINEX';
+    }
+
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)
     {
         parent::__construct($user, $exchangeProvider);
     }
     
-    private function GetBitfinex($user_id = null)
+    private function GetBitfinex($userId = null)
     {
-        $currentUser = $this->user->find($user_id);
-        
-        $bitfinexExchangeProviderId = $this->exchangeProvider->where('code', '=', 'BITFINEX')->firstOrFail()->id;
-        
-        $userBittrexKey = $currentUser->apiKeys()->where('exchange_provider_id', '=', $bitfinexExchangeProviderId)->firstOrFail();
-                     
-        return new \Bitfinex($userBittrexKey->api_key, $userBittrexKey->api_secret);
+        $userKey = $this->getAuthKeys($userId);
+        return new \Bitfinex($userKey['key'], $userKey['secret']);
     }
 
-    public function GetBalances($user_id = null)
+    protected function getClientBalances($userId)
     {
-        $bitfinexClient = $this->GetBitfinex($user_id);
-        $balances = $bitfinexClient->get_balances();
-        return collect($balances)->filter(function($v)
-            {
-                return $v["amount"] > 0;
-            })->map(function($item)
-            {
-                $balance = ['Currency' => strtoupper($item['currency']),
-                            'Balance' => $item['amount'],
-                            'Available' => '',
-                            'Pending' => '',
-                            'CryptoAddress' => ''];
-                return json_decode(json_encode($balance), FALSE);
-            });
+        return $this->GetBitfinex($userId)->get_balances();
+    }
+
+    protected function getAmount($value)
+    {
+        return $value["amount"] > 0;
+    }
+
+    protected function mapBalancesCallback($value, $key)
+    {
+        $balance = [
+            'Currency' => strtoupper($value['currency']),
+            'Balance' => $value['amount'],
+            'Available' => '',
+            'Pending' => '',
+            'CryptoAddress' => ''
+        ];
+        return json_decode(json_encode($balance), false);        
     }
 
     public function GetBitcoinDollarMarket($user_id)
@@ -179,10 +183,5 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         
         return $result; */
         throw new BadMethodCallException("Not implemented");
-    }
-    
-    private function toFixed($number)
-    {
-        return number_format($number, 4, ".", "");
     }
 }
