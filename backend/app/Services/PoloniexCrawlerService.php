@@ -16,6 +16,11 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         return 'POLONIEX';
     }
 
+    protected function getUSDSymbol()
+    {
+        return 'USDT';
+    }
+
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)
     {
         parent::__construct($user, $exchangeProvider);
@@ -23,10 +28,10 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
 
     protected function getClientBalances($userId)
     {
-        return $this->GetPoloniex($userId)->getBalances();
+        return $this->getClient($userId)->getBalances();
     }
     
-    private function GetPoloniex($userId = null)
+    protected function getClient($userId)
     {
         $urls = Config::get('poloniex.urls');
         return new Client($this->getAuthKeys($userId), $urls);  
@@ -49,97 +54,34 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         return $value;
     }
 
-    public function GetBitcoinDollarMarket($user_id)
+    protected function GetMarketAverage($market)
     {
-        $poloniexClient = $this->GetPoloniex($user_id);
+        $btcLast = $market['last'];
+        $btcBid = $market['highestBid'];
+        $btcAsk = $market['lowestAsk'];
+        return ($btcLast + $btcBid + $btcAsk) / 3;
+    }
+
+    protected function GetBitcoinDollarMarket($userId)
+    {
+        $poloniexClient = $this->getClient($userId);
         
         $btcMkt = $poloniexClient->getTicker('USDT_BTC');
         
-        $btcLast = $btcMkt['last'];
-        $btcBid  = $btcMkt['highestBid'];
-        $btcAsk  = $btcMkt['lowestAsk'];
-        $btcMean = ( $btcLast + $btcBid + $btcAsk ) / 3;
-        
-        return $btcMean;
+        return $this->GetMarketAverage($btcMkt);
     }
     
-    public function GetAllBalances($user_id)
-    {    
-        $poloniexClient = $this->GetPoloniex($user_id);
-        
-        $btcMean = $this->GetBitcoinDollarMarket($user_id);
-        
-        $balances = $this->GetBalances($user_id);
-        
-        $outputBalances = [];
-        
-        $saldoTotalMBTC = 0;
-        $saldoTotalUSD  = 0;
-        
-        $tickers = $poloniexClient->getTickers();
-
-        foreach($balances as $balance)
-        {
-            $detalleBalance = [];
-            $saldo = $balance->Balance;
-            if($saldo > 0)
-            {
-                $currency = $balance->Currency;
-                try{             
-                    if($currency != 'BTC' && $currency != 'USDT') 
-                    {
-                        $symbol = 'BTC_'.$currency;
-                        $mkt = $tickers[$symbol];
-
-                        $last        = $mkt['last'];
-                        $bid         = $mkt['highestBid'];
-                        $ask         = $mkt['lowestAsk'];
-                        $mean        = ( $last + $bid + $ask ) / 3;
-                        $mBtcMean    = $mean * 1000;
-                        $dollarValue = $mean * $btcMean;
-                    }
-                    else if($currency == 'BTC')
-                    {
-                        $mean        = 1;
-                        $mBtcMean    = 1000;
-                        $dollarValue = $btcMean;
-                    }
-                    else if($currency == 'USDT')
-                    {
-                        $mean = 1 / $btcMean;
-                        $dollarValue = 1;
-                        $mBtcMean = $mean * 1000;
-                    }
-                    
-                    $mBtcMean    = $this->toFixed($mBtcMean);
-                    $dollarValue = $this->toFixed($dollarValue);
-                    $saldoMBTC   = $this->toFixed($mBtcMean * $saldo);
-                    $saldoUSD    = $this->toFixed($dollarValue * $saldo);
-                    $saldo       = $this->toFixed($saldo);
-                    
-                    $detalleBalance['MONEDA'    ] = $currency;
-                    $detalleBalance['VALOR_MBTC'] = $mBtcMean;
-                    $detalleBalance['VALOR_USDT'] = $dollarValue;
-                    $detalleBalance['SALDO'     ] = $saldo;
-                    $detalleBalance['SALDO_MBTC'] = $saldoMBTC;
-                    $detalleBalance['SALDO_USDT'] = $saldoUSD;
-                    
-                    $saldoTotalMBTC += $saldoMBTC;
-                    $saldoTotalUSD  += $saldoUSD;
-                }
-                catch(\Exception $e){
-                    $detalleBalance['ERROR'] = "Error obteniendo datos para $currency";
-                }
-                $outputBalances[] = $detalleBalance;
-            }
-        }
-        
-        return [ 'TOTAL_USD'     => $saldoTotalUSD,
-                 'TOTAL_MBTC'    => $saldoTotalMBTC,
-                 'VALOR_BTC_USD' => $btcMean,
-                 'assets'        => $outputBalances ];
+    protected function getCurrencyMarket($currency, $tickers, $client)
+    {
+        $marketSymbol = 'BTC_' . $currency;
+        return $tickers[$marketSymbol];
     }
-    
+
+    protected function getTickers($client)
+    {
+        return $client->getTickers();
+    }
+
     public function GetAllAssetsVersusBtcWithMarketData()
     {
 /*        $bitfinex = $this->GetBitfinex();

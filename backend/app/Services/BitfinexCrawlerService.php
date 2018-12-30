@@ -15,12 +15,17 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         return 'BITFINEX';
     }
 
+    protected function getUSDSymbol()
+    {
+        return 'USD';
+    }
+
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)
     {
         parent::__construct($user, $exchangeProvider);
     }
     
-    private function GetBitfinex($userId = null)
+    protected function getClient($userId)
     {
         $userKey = $this->getAuthKeys($userId);
         return new \Bitfinex($userKey['key'], $userKey['secret']);
@@ -28,7 +33,7 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
 
     protected function getClientBalances($userId)
     {
-        return $this->GetBitfinex($userId)->get_balances();
+        return $this->getClient($userId)->get_balances();
     }
 
     protected function getAmount($value)
@@ -47,101 +52,39 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         ];
         return json_decode(json_encode($balance), false);        
     }
-
-    public function GetBitcoinDollarMarket($user_id)
+    
+    protected function GetMarketAverage($market)
     {
-        $bitfinexClient = $this->GetBitfinex($user_id);
+        $btcLast = $market['last_price'];
+        $btcBid = $market['bid'];
+        $btcAsk = $market['ask'];
+        return ($btcLast + $btcBid + $btcAsk) / 3;
+    }
+
+    protected function GetBitcoinDollarMarket($userId)
+    {
+        $bitfinexClient = $this->getClient($userId);
         
         $btcMkt = $bitfinexClient->get_ticker('BTCUSD');
         
-        $btcLast = $btcMkt['last_price'];
-        $btcBid  = $btcMkt['bid'];
-        $btcAsk  = $btcMkt['ask'];
-        $btcMean = ( $btcLast + $btcBid + $btcAsk ) / 3;
-        
-        return $btcMean;
-        
+        return $this->GetMarketAverage($btcMkt);
+    }
+
+    protected function getCurrencyMarket($currency, $tickers, $client)
+    {
+        $marketSymbol = $currency . 'BTC';
+        return $client->get_ticker($marketSymbol);
     }
     
-    public function GetAllBalances($user_id)
-    {    
-        $bitfinexClient = $this->GetBitfinex($user_id);
-        
-        $btcMean = $this->GetBitcoinDollarMarket($user_id);
-        
-        $balances = $this->GetBalances($user_id);
-        
-        $outputBalances = [];
-        
-        $saldoTotalMBTC = 0;
-        $saldoTotalUSD  = 0;
-        foreach($balances as $balance)
-        {
-            $detalleBalance = [];
-            $saldo = $balance->Balance;
-            if($saldo > 0)
-            {
-                $currency = $balance->Currency;
-                try{
-                    
-                    if($currency != 'BTC' && $currency != 'USD') 
-                    {
-
-                        $symbol = $currency.'BTC';
-                        $mkt = $bitfinexClient->get_ticker($symbol);
-
-                        $last        = $mkt['last_price'];
-                        $bid         = $mkt['bid'];
-                        $ask         = $mkt['ask'];
-                        $mean        = ( $last + $bid + $ask ) / 3;
-                        $mBtcMean    = $mean * 1000;
-                        $dollarValue = $mean * $btcMean;
-                    }
-                    else if($currency == 'BTC')
-                    {
-                        $mean        = 1;
-                        $mBtcMean    = 1000;
-                        $dollarValue = $btcMean;
-                    }
-                    else if($currency == 'USD')
-                    {
-                        $mean = 1 / $btcMean;
-                        $dollarValue = 1;
-                        $mBtcMean = $mean * 1000;
-                    }
-                    
-                    $mBtcMean    = $this->toFixed($mBtcMean);
-                    $dollarValue = $this->toFixed($dollarValue);
-                    $saldoMBTC   = $this->toFixed($mBtcMean * $saldo);
-                    $saldoUSD    = $this->toFixed($dollarValue * $saldo);
-                    $saldo       = $this->toFixed($saldo);
-                    
-                    $detalleBalance['MONEDA'    ] = $currency;
-                    $detalleBalance['VALOR_MBTC'] = $mBtcMean;
-                    $detalleBalance['VALOR_USDT'] = $dollarValue;
-                    $detalleBalance['SALDO'     ] = $saldo;
-                    $detalleBalance['SALDO_MBTC'] = $saldoMBTC;
-                    $detalleBalance['SALDO_USDT'] = $saldoUSD;
-                    
-                    $saldoTotalMBTC += $saldoMBTC;
-                    $saldoTotalUSD  += $saldoUSD;
-                }
-                catch(\Exception $e){
-                    $detalleBalance['ERROR'] = "Error obteniendo datos para $currency";
-                }
-                $outputBalances[] = $detalleBalance;
-            }
-        }
-        
-        return [ 'TOTAL_USD'     => $saldoTotalUSD,
-                 'TOTAL_MBTC'    => $saldoTotalMBTC,
-                 'VALOR_BTC_USD' => $btcMean,
-                 'assets'        => $outputBalances ];
+    protected function getTickers($client)
+    {
+        // By the moment, bitfinex has no get all tickers function
+        return null;
     }
-    
+
     public function GetAllAssetsVersusBtcWithMarketData()
     {
-/*        $bitfinex = $this->GetBitfinex();
+/*        $bitfinex = $this->getClient();
         $markets = $bitfinex->getMarketSummaries()->result;
         
         $result = [];
@@ -166,7 +109,7 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
     
     public function GetAllAssetsVersusBtc()
     {
-        /*$bitfinex = $this->GetBitfinex();
+        /*$bitfinex = $this->getClient();
         $markets = $bitfinex->getMarkets()->result;
         
         $result = [];
