@@ -136,9 +136,10 @@ angular.module('trading-freedom.services', [])
         if(self.isAuthed()) return $localStorage.get('user_token');
     };
 
-    self.setToken = function(token)
+    self.setToken = function(loginData)
     {
-        $localStorage.set('user_token', token);
+        $localStorage.set('user_token', loginData.token);
+        $localStorage.set('user_id', loginData.userId)
     };
 
     self.clear = function()
@@ -147,7 +148,34 @@ angular.module('trading-freedom.services', [])
         $localStorage.delete('user_token');
     };
 
+    self.getCurrentUserId = function () {
+      return $localStorage.get('user_id');
+    }
+
     return self;
+})
+
+.service('UserService', function(http, ENV, AuthService){
+  var self = this;
+
+  self.get = function (callback) {
+    http({
+      url: ENV.endpoint + 'users/own',
+      success: callback,
+    });
+  };
+
+  self.update = function (user, callback, error) {
+    http({
+      url: ENV.endpoint + 'users/own',
+      success: callback,
+      error: error,
+      method: 'POST',
+      data: user,
+    });
+  };
+
+  return self;
 })
 
 .service('LoginService', function(http, AuthService, ENV)
@@ -158,7 +186,7 @@ angular.module('trading-freedom.services', [])
     {
         var successLogin = function(data)
         {
-            AuthService.setToken(data.token);
+            AuthService.setToken(data);
             successCallback();
         };
 

@@ -37,7 +37,8 @@ class LoginController extends Controller
         } catch (JWTAuthException $e) {
             return response()->json(['failed_to_create_token'], 500);
         }
-        return response()->json(compact('token'));
+        $user_id = $this->user->where('email', '=', $credentials['email'])->firstOrFail()->id;
+        return response()->json(compact('token', 'user_id'));
     }
 
     public function __construct(User $user)

@@ -37,4 +37,5 @@ Route::group(['middleware' => 'jwt.auth'], function ()
     Route::resource('exchanges/own', 'OwnExchangeProvidersController');
     Route::resource('exchanges', 'ExchangeProvidersController');
     Route::resource('apikeys', 'ApiKeysController');
+    Route::resource('users/own', 'OwnUsersController');
 });

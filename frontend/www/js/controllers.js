@@ -2,37 +2,18 @@ angular.module('trading-freedom.controllers', [])
 
 .controller('DashCtrl', function($scope) {})
 
-.controller('ChatsCtrl', function($scope, Chats) {
-  // With the new view caching in Ionic, Controllers are only called
-  // when they are recreated or on app start, instead of every page change.
-  // To listen for when this page is active (for example, to refresh data),
-  // listen for the $ionicView.enter event:
-  //
-  //$scope.$on('$ionicView.enter', function(e) {
-  //});
-
-  $scope.chats = Chats.all();
-  $scope.remove = function(chat) {
-    Chats.remove(chat);
-  };
-})
-
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
-
-.controller('AccountCtrl', function ($localStorage, CrawlerService, lodash, $scope, AuthService, KeysService) {
+.controller('KeysCtrl', function ($localStorage, CrawlerService, lodash, $scope, KeysService) {
   var self = this;
   self.ownExchanges = [];
   self.exchanges = [];
   self.selectedExchange = null;
   self.keyToAdd = null;
 
-  self.addKeyButtonTitle = function() {
+  self.addKeyButtonTitle = function () {
     return self.keyToAdd ? 'Cancel' : 'Add new key';
   };
 
-  self.onload = function() {
+  self.onload = function () {
     self.keyToAdd = null;
     CrawlerService.GetOwnExchanges(function (data) {
       self.ownExchanges = data.length ? data : [{
@@ -49,19 +30,12 @@ angular.module('trading-freedom.controllers', [])
 
   $scope.$on('$ionicView.beforeEnter', self.onload);
 
-  self.selectionChanged = function()
-  {
+  self.selectionChanged = function () {
     $localStorage.set('defaultExchangeId', self.selectedExchange.id);
   };
 
-  self.Logout = function()
-  {
-    AuthService.clear();
-  };
-
-  self.AddKey = function ()
-  {
-    if(self.exchanges.length === 0) {
+  self.AddKey = function () {
+    if (self.exchanges.length === 0) {
       CrawlerService.GetExchanges(function (data) {
         self.exchanges = data;
       });
@@ -78,14 +52,60 @@ angular.module('trading-freedom.controllers', [])
     }
   };
 
-  self.isValidKey = function()
-  {
+  self.isValidKey = function () {
     return self.keyToAdd && self.keyToAdd.api_key && self.keyToAdd.api_secret && self.keyToAdd.exchange_provider_id;
   };
 
-  self.SaveKey = function()
-  {
+  self.SaveKey = function () {
     KeysService.Save(self.keyToAdd, self.onload);
+  };
+
+  return self;
+})
+
+.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
+  $scope.chat = Chats.get($stateParams.chatId);
+})
+
+.controller('AccountCtrl', function (AuthService, UserService, $scope) {
+  var self = this;
+  self.editingUser = {};
+
+  self.modifyPassword = false;
+
+  self.onload = function () {
+    UserService.get(function(user){
+      self.editingUser = user;
+    });
+  };
+
+  $scope.$on('$ionicView.beforeEnter', self.onload);
+
+  self.Logout = function () {
+    AuthService.clear();
+  };
+
+  self.Update = function() {
+    if(self.modifyPassword)
+    {
+      delete self.editingUser.repeatPassword;
+    }
+
+    UserService.update(self.editingUser, function() {
+      // Save  succceed
+      self.modifyPassword = false;
+    }, function() {
+      self.modifyPassword = false;
+    });
+  };
+
+  self.isValid = function() {
+    var isValid = () => self.editingUser.name && self.editingUser.email;
+
+    return self.modifyPassword
+      ? self.editingUser.password &&
+      self.editingUser.password === self.editingUser.repeatPassword
+      : isValid();
   };
 
   return self;

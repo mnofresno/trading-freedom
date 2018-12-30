@@ -90,12 +90,12 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
     }
   })
 
-  .state('tab.chats', {
-      url: '/chats',
+  .state('tab.keys', {
+      url: '/keys',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/tab-chats.html',
-          controller: 'ChatsCtrl',
+        'tab-keys': {
+          templateUrl: 'templates/tab-keys.html',
+          controller: 'KeysCtrl',
         controllerAs: 'ctrl'
         }
       }
