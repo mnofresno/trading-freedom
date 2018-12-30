@@ -13,6 +13,10 @@ angular.module('trading-freedom.controllers', [])
     return self.keyToAdd ? 'Cancel' : 'Add new key';
   };
 
+  self.noKeys = function() {
+    return self.ownExchanges.length === 1 && !self.ownExchanges[0].id;
+  };
+
   self.onload = function () {
     self.keyToAdd = null;
     CrawlerService.GetOwnExchanges(function (data) {
@@ -32,6 +36,12 @@ angular.module('trading-freedom.controllers', [])
 
   self.selectionChanged = function () {
     $localStorage.set('defaultExchangeId', self.selectedExchange.id);
+  };
+
+  self.RemoveKey = function() {
+    if (self.selectedExchange) {
+      KeysService.Delete(self.selectedExchange).then(self.onload);
+    }
   };
 
   self.AddKey = function () {

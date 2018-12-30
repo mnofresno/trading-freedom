@@ -106,9 +106,11 @@ angular.module('trading-freedom.services', [])
             config.headers['Authorization'] = 'bearer ' + token;
         }
 
-        $http(config).then(function(response)
+        return $http(config).then(function(response)
         {
-            config.success(response.data);
+            if (config.success) {
+              config.success(response.data);
+            }
         }, function(response)
         {
             if(400 < response.status < 420)
@@ -231,7 +233,7 @@ angular.module('trading-freedom.services', [])
 
     self.GetBalances = function(exchange, callback)
     {
-      exchangeId = exchange ? exchange.id : 1;
+      var exchangeId = exchange ? exchange.id : 1;
       http({ url: ENV.endpoint + 'balances/' +  exchangeId, success: callback });
     };
 
@@ -251,6 +253,14 @@ angular.module('trading-freedom.services', [])
       success: successCallback,
       error: errorCalback
     })
+  };
+
+  self.Delete = function (exchange) {
+    var exchangeId = exchange.id;
+    return http({
+      url: ENV.endpoint + 'apikeys/' + exchangeId,
+      method: 'DELETE',
+    });
   };
 
   return self;

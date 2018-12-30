@@ -7,6 +7,12 @@
     </ion-item>
     <div class="row">
       <div class="col col-100">
+<button class="button button-assertive button-fullwidth" ng-click="ctrl.RemoveKey()" ng-disabled="ctrl.noKeys()">Remove
+  key</button>
+      </div>
+    </div>
+    <div class="row">
+      <div class="col col-100">
         <button class="button button-balanced button-fullwidth" ng-click="ctrl.AddKey()">{{ctrl.addKeyButtonTitle()}}</button>
       </div>
     </div>

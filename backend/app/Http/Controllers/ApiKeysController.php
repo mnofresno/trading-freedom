@@ -17,4 +17,13 @@ class ApiKeysController extends Controller
         UserKey::create($data);
         return '';
     }
+
+    public function destroy($id)
+    {
+        $exchange = ExchangeProvider::find($id);
+        $userKeyToDelete = UserKey::where('user_id', '=', $this->getCurrentUser()->id)
+            ->where('exchange_provider_id', '=', $id)
+            ->firstOrFail();
+        $userKeyToDelete->delete();
+    }
 }
