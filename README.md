@@ -1,7 +1,19 @@
-# trading-freedom
-
 Simple cryptocurrency Bittrex trading helper app
 
-By the moment this application is just a simple API that uses information obtained from the Bittrex exchange API to present it in an organized way in Spanish.
+This app shows all your wallet's assets from different exchange systems.
 
-The idea is to build also a mobile APP to show you relevant information about the ups and downs of the chosen currencies
+In the list you can see on your phone it will show the value of your assets in USD and mBTC.
+
+Additionally, you can check the value of the assets in the market in those two currencies.
+
+The assets are shown with it's corresponding currency icon symbol.
+
+You can set the API key and API secret directly from the app and update your user profile data storing all this data on a mysql database.
+
+By the moment, this are the supported exchanges:
+
+- Bittrex
+- Bitfinex
+- Poloniex
+
+If you need to add any new feature to this project please contact me and feel free to collaborate and create PR.

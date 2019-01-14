@@ -8,6 +8,7 @@
     "angular": "1.5.3"
   },
   "dependencies": {
-    "ng-lodash": "^0.5.0"
+    "ng-lodash": "^0.5.0",
+    "cryptofont": "^0.1.1"
   }
 }

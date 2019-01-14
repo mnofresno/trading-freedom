@@ -198,7 +198,7 @@ angular.module('trading-freedom.controllers', [])
     return self;
 })
 
-.controller('BalanceCtrl', function(CrawlerService, $scope, $localStorage)
+.controller('BalanceCtrl', function(CrawlerService, $scope, $localStorage, lodash)
 {
     var self = this;
 
@@ -209,6 +209,28 @@ angular.module('trading-freedom.controllers', [])
     self.exchanges = [];
 
     self.selectedExchange = null;
+
+    var posibleIconClasses = [];
+
+    self.coinIconIsDefined = function(coin)
+    {
+      if(posibleIconClasses.length === 0) {
+        for (var i = 0; i < document.styleSheets.length; i++) {
+          var rules = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
+          for (var x in rules) {
+            var item = rules[x].selectorText;
+            if ((typeof item == 'string') && item.startsWith('.cf-')) posibleIconClasses.push(item);
+          }
+        }
+      }
+      return !!lodash.find(posibleIconClasses, p => p == '.cf-' + coin + '::before');
+    };
+
+    self.getCurrencyIcon = function(item)
+    {
+      var coin = item.MONEDA.toLowerCase();
+      return self.coinIconIsDefined(coin) ? 'cf cf-' + coin : 'ion ion-cash';
+    };
 
     self.GetBalances = function(exchange)
     {

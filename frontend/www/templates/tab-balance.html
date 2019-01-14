@@ -1,7 +1,7 @@
-<ion-view view-title="Saldos de cuentas">
+<ion-view view-title="Exchanges balances">
     <ion-content class="padding">
         <ion-refresher
-            pulling-text="Obtener nuevos balances..."
+            pulling-text="Get updated balances..."
             on-refresh="ctrl.GetDefaultBalances()">
         </ion-refresher>
 
@@ -15,7 +15,7 @@
             <div class="col valores-mercado">
                 <div class="list card" ng-show="ctrl.Balances.assets">
                     <a href="#" class="item item-icon-left" ng-repeat="item in ctrl.Balances.assets">
-                        <i class="icon ion-home"></i>
+                        <i class="icon" ng-class="ctrl.getCurrencyIcon(item)"></i>
                         <div class="row">
                             <div class="col col-50">
                                 <div class="row">
