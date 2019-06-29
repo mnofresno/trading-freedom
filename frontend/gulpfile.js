@@ -7,8 +7,6 @@ var paths = {
   sass: ['./scss/**/*.scss']
 };
 
-gulp.task('default', ['sass']);
-
 gulp.task('sass', function(done) {
   gulp.src('./scss/ionic.app.scss')
     .pipe(sass())
@@ -22,6 +20,8 @@ gulp.task('sass', function(done) {
     .on('end', done);
 });
 
-gulp.task('watch', ['sass'], function() {
+gulp.task('watch', gulp.series(['sass'], function() {
   gulp.watch(paths.sass, ['sass']);
-});
+}));
+
+gulp.task('default', gulp.series(['sass']));
