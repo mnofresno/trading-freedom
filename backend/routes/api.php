@@ -38,4 +38,5 @@ Route::group(['middleware' => 'jwt.auth'], function ()
     Route::resource('exchanges', 'ExchangeProvidersController');
     Route::resource('apikeys', 'ApiKeysController');
     Route::resource('users/own', 'OwnUsersController');
+    Route::put ('users/{user_id}/fcm'  , [ 'uses' => 'UsersController@UpdateFCMToken'        ]);
 });

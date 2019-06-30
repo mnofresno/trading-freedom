@@ -7,13 +7,14 @@
 // 'starter.controllers' is found in controllers.js
 angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trading-freedom.services', 'trading-freedom.config', 'trading-freedom.interceptors', 'ngLodash'])
 
-.run(function($ionicPlatform, $rootScope, $state, AuthService, $ionicLoading, $locale)
+.run(function($ionicPlatform, $rootScope, $state, AuthService, $ionicLoading, $locale, NotificationsService)
 {
     $locale.NUMBER_FORMATS.GROUP_SEP = ".";
     $locale.NUMBER_FORMATS.DECIMAL_SEP = ",";
 
     $ionicPlatform.ready(function()
     {
+        NotificationsService.registerCallbacks();
         // Hide the accessory bar by default (remove this to show the accessory bar above the keyboard
         // for form inputs)
         if (window.cordova && window.cordova.plugins && window.cordova.plugins.Keyboard)

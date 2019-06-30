@@ -141,7 +141,7 @@ angular.module('trading-freedom.services', [])
     self.setToken = function(loginData)
     {
         $localStorage.set('user_token', loginData.token);
-        $localStorage.set('user_id', loginData.userId)
+        $localStorage.set('user_id', loginData.user_id)
     };
 
     self.clear = function()
@@ -184,10 +184,18 @@ angular.module('trading-freedom.services', [])
 {
     var self = this;
 
+    var loggedInCallback = null;
+
+    self.setLoggedInCallback = function(callback)
+    {
+        loggedInCallback = callback;
+    };
+
     self.Login = function(credentials, successCallback, errorCallback)
     {
         var successLogin = function(data)
         {
+            loggedInCallback();
             AuthService.setToken(data);
             successCallback();
         };
@@ -208,6 +216,13 @@ angular.module('trading-freedom.services', [])
         success: successLogin,
         error: errorCalback
       })
+    };
+
+    self.updateFCM = function(fcmToken, callback)
+    {
+        var usuario_actual_id = AuthService.getCurrentUserId();
+        if(!usuario_actual_id) return;
+        http({ method: 'PUT', url: ENV.endpoint + 'users/' + usuario_actual_id + '/fcm', data: { fcm_token: fcmToken }}).success(callback);
     };
 
     return self;
@@ -264,4 +279,82 @@ angular.module('trading-freedom.services', [])
   };
 
   return self;
+})
+
+.service('NotificationsService' , function($localStorage, LoginService)
+{
+    var self = this;
+
+    var notificationCallback = null;
+
+    self.setNotificationCallback = function(callback)
+    {
+        notificationCallback = callback;
+    };
+
+    self.saveToken = function(token)
+    {
+        LoginService.updateFCM(token, function(response)
+        {
+            $localStorage.set('fcm_token_stored', true);
+        });
+    };
+
+    self.getToken = function()
+    {
+        if(!$localStorage.has('fcm_token_stored'))
+        {
+            window.FirebasePlugin.getToken(self.saveToken);
+        }
+    };
+
+    self.installTokenRefresher = function()
+    {
+        window.FirebasePlugin.onTokenRefresh(function(token)
+        {
+            $localStorage.delete('fcm_token_stored');
+            self.saveToken(token);
+        });
+    };
+
+    self.installNotificationHandler = function()
+    {
+        window.FirebasePlugin.onNotificationOpen(self.notificationHandler);
+    };
+
+    self.notificationHandler = function(data)
+    {
+        console.debug(data);
+        if(notificationCallback)
+        {
+            notificationCallback(data.mensaje);
+        }
+
+        if(data.isCommand) return;
+
+        if(data.wasTapped)
+        {
+            //Notification was received on device tray and tapped by the user.
+            alert(data.mensaje);
+        }
+        else
+        {
+            //Notification was received in foreground. Maybe the user needs to be notified.
+            alert(data.mensaje);
+        }
+
+        MensajesService.MarcarComoLeidos();
+    };
+
+    self.registerCallbacks = function()
+    {
+        if(!window.FirebasePlugin) return;
+
+        self.getToken();
+        self.installTokenRefresher();
+        self.installNotificationHandler();
+        LoginService.setLoggedInCallback(self.getToken);
+    };
+
+    return self;
 });

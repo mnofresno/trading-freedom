@@ -12,13 +12,14 @@ use Request;
 class Controller extends BaseController
 {
     use AuthorizesRequests, DispatchesJobs, ValidatesRequests;
+
     protected function getCurrentUser()
     {
         $headerAuth = Request::header('Authorization');
         if ($headerAuth)
         {
-            $this->usuario = JWTAuth::parseToken()->authenticate();    
+            $user = JWTAuth::parseToken()->authenticate();
         }
-        return $this->usuario;
+        return $user;
     }
 }
