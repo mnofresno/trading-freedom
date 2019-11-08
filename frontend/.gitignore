@@ -33,3 +33,4 @@ Thumbs.db
 UserInterfaceState.xcuserstate
 www/lib/
 www/js/config.js
+.gradle
