@@ -1,2 +1,2 @@
 #!/bin/bash
-adb uninstall acom.mnofresno.TradingFreedom
+adb uninstall com.mnofresno.TradingFreedom
