@@ -1,0 +1,13 @@
+version: '3'
+services:
+  ionic:
+    build:
+      context: ./build
+    volumes:
+      - .:/code
+      - ./.gradle:/root/.gradle
+    working_dir: /code
+    ports:
+     - "8100:8100"
+    command: ["/usr/local/bin/ionic", "serve", "--no-open"]
+    network_mode: host
