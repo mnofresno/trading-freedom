@@ -13,9 +13,9 @@ class BittrexCrawlerService extends BaseCrawlerService implements ICrawlerServic
         return 'BITTREX';
     }
 
-    protected function getUSDSymbol()
+    protected function getUSDSymbols(): array
     {
-        return 'USDT';
+        return ['USDT'];
     }
 
     public function __construct(User $user, ExchangeProvider $exchangeProvider)

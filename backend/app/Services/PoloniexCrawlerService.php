@@ -16,7 +16,7 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         return 'POLONIEX';
     }
 
-    protected function getUSDSymbol()
+    protected function getUSDSymbols(): array
     {
         return ['USDT', 'USDC'];
     }
@@ -92,11 +92,51 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         throw new BadMethodCallException("Not implemented");
     }
 
-    public function getCompleteBalances($userId)
+    private function getCompleteBalances($userId)
     {
         return $this->getClient($userId)->trading([
             'command' => 'returnCompleteBalances',
             'account' => 'all'
         ]);
+    }
+
+    function GetOpenOrders($userId)
+    {
+        // Example response for 'all'
+        // {
+        //     "BTC_ARDR": [],
+        //     "BTC_BAT": [],
+        //     "BTC_BCH": [],
+        //     "BTC_ETH":
+        //     [
+        //         {
+        //             "orderNumber": '514515459658',
+        //             "type": 'buy',
+        //             "rate": '0.00001000',
+        //             "startingAmount": '100.00000000',
+        //             "amount": '100.00000000',
+        //             "total": '0.00100000',
+        //             "date": '2018-10-23 17:41:15',
+        //             "margin": 0, 
+        //             "clientOrderId": '12345'
+        //         }
+        //     ]
+        // }
+          
+        $allOrders = $this->getClient($userId)->getOpenOrders('all');
+        $output = array_reduce(array_keys($allOrders), function (array &$result, string $pair) use ($allOrders) {
+            $orders = $allOrders[$pair];
+            $result[] = array_map(function (array $item) use ($pair) {
+                return [
+                    'pair' => $pair,
+                    'type' => $item['type'],
+                    'amount' => $item['amount'],
+                    'total' => $item['total'],
+                    'rate' => $item['rate'],
+                    'date' => $item['date']
+                ];
+            }, $orders); 
+            return $result;
+        }, []);
     }
 }

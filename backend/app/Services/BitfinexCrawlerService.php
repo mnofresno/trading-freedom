@@ -15,9 +15,9 @@ class BitfinexCrawlerService extends BaseCrawlerService implements ICrawlerServi
         return 'BITFINEX';
     }
 
-    protected function getUSDSymbol()
+    protected function getUSDSymbols(): array
     {
-        return 'USD';
+        return ['USD'];
     }
 
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)

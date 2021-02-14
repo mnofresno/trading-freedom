@@ -27,7 +27,7 @@ abstract class BaseCrawlerService
     abstract protected function GetBitcoinDollarMarket($userId);
     abstract protected function getAmount($item);
     abstract protected function getExchangeProviderCode();
-    abstract protected function getUSDSymbol();
+    abstract protected function getUSDSymbols(): array;
     abstract protected function getTickers($client);
     abstract protected function getCurrencyMarket($currency, $tickers, $client);
     abstract protected function GetMarketAverage($market);
@@ -72,7 +72,7 @@ abstract class BaseCrawlerService
                         $mean = 1;
                         $mBtcMean = 1000;
                         $dollarValue = $btcMean;
-                    } else if ($currency === $this->getUSDSymbol() || in_array($currency, $this->getUSDSymbol())) {
+                    } else if (in_array($currency, $this->getUSDSymbols())) {
                         $mean = 1 / $btcMean;
                         $dollarValue = 1;
                         $mBtcMean = $mean * 1000;
