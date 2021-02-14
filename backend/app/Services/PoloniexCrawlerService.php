@@ -18,7 +18,7 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
 
     protected function getUSDSymbol()
     {
-        return 'USDT';
+        return ['USDT', 'USDC'];
     }
 
     public function __construct(User $user,  ExchangeProvider $exchangeProvider)
@@ -28,7 +28,7 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
 
     protected function getClientBalances($userId)
     {
-        return $this->getClient($userId)->getBalances();
+        return $this->getCompleteBalances($userId);
     }
     
     protected function getClient($userId)
@@ -41,9 +41,9 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
     {
         $balance = [
             'Currency' => $key,
-            'Balance' => $value,
-            'Available' => '',
-            'Pending' => '',
+            'Balance' => $this->getAmount($value),
+            'Available' => $value['available'],
+            'Pending' => $value['onOrders'],
             'CryptoAddress' => ''
         ];
         return json_decode(json_encode($balance), false);        
@@ -51,7 +51,7 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
 
     protected function getAmount($value)
     {
-        return $value;
+        return $value['available'] + $value['onOrders'];
     }
 
     protected function GetMarketAverage($market)
@@ -84,47 +84,19 @@ class PoloniexCrawlerService extends BaseCrawlerService implements ICrawlerServi
 
     public function GetAllAssetsVersusBtcWithMarketData()
     {
-/*        $bitfinex = $this->GetBitfinex();
-        $markets = $bitfinex->getMarketSummaries()->result;
-        
-        $result = [];
-        
-        $valorBtc = $this->GetBitcoinDollarMarket();
-        
-        foreach($markets as $market)
-        {
-            if(starts_with($market->MarketName, 'BTC-'))
-            {
-                $valorPromedio = ($market->Last + $market->Bid + $market->Ask) / 3;                
-                $result[] = [ 'code' => str_after($market->MarketName, 'BTC-'), 'VALOR_MBTC' => $valorPromedio * 1000, 'VALOR_USDT' => $valorPromedio * $valorBtc ];
-            }
-        }
-        
-        $result[] = [ 'code' => 'BTC', 'VALOR_MBTC' => 1000, 'VALOR_USDT' => $valorBtc ];
-        
-        return $result;
-        */
         throw new BadMethodCallException("Not implemented");
     }
     
     public function GetAllAssetsVersusBtc()
     {
-        /*$bitfinex = $this->GetBitfinex();
-        $markets = $bitfinex->getMarkets()->result;
-        
-        $result = [];
-        
-        foreach($markets as $market)
-        {
-            if($market->BaseCurrency == 'BTC' && $market->IsActive == 1)
-            {
-                $result[] = [ 'code' => $market->MarketCurrency, 'description' => $market->MarketCurrencyLong ];
-            }
-        }
-        
-        $result[] = [ 'code' => 'BTC', 'description' => 'Bitcoin' ];
-        
-        return $result; */
         throw new BadMethodCallException("Not implemented");
+    }
+
+    public function getCompleteBalances($userId)
+    {
+        return $this->getClient($userId)->trading([
+            'command' => 'returnCompleteBalances',
+            'account' => 'all'
+        ]);
     }
 }

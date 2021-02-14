@@ -72,7 +72,7 @@ abstract class BaseCrawlerService
                         $mean = 1;
                         $mBtcMean = 1000;
                         $dollarValue = $btcMean;
-                    } else if ($currency == $this->getUSDSymbol()) {
+                    } else if ($currency === $this->getUSDSymbol() || in_array($currency, $this->getUSDSymbol())) {
                         $mean = 1 / $btcMean;
                         $dollarValue = 1;
                         $mBtcMean = $mean * 1000;
@@ -112,50 +112,7 @@ abstract class BaseCrawlerService
             'assets' => $outputBalances
         ];
     }
-    
-    // public function GetAllAssetsVersusBtcWithMarketData()
-    // {
-    //     $bittrex = $this->GetBittrex();
-    //     $markets = $bittrex->getMarketSummaries()->result;
         
-    //     $result = [];
-        
-    //     $valorBtc = $this->GetBitcoinDollarMarket();
-        
-    //     foreach($markets as $market)
-    //     {
-    //         if(starts_with($market->MarketName, 'BTC-'))
-    //         {
-    //             $valorPromedio = ($market->Last + $market->Bid + $market->Ask) / 3;                
-    //             $result[] = [ 'code' => str_after($market->MarketName, 'BTC-'), 'VALOR_MBTC' => $valorPromedio * 1000, 'VALOR_USDT' => $valorPromedio * $valorBtc ];
-    //         }
-    //     }
-        
-    //     $result[] = [ 'code' => 'BTC', 'VALOR_MBTC' => 1000, 'VALOR_USDT' => $valorBtc ];
-        
-    //     return $result;
-    // }
-    
-    // public function GetAllAssetsVersusBtc()
-    // {
-    //     $bittrex = $this->GetBittrex();
-    //     $markets = $bittrex->getMarkets()->result;
-        
-    //     $result = [];
-        
-    //     foreach($markets as $market)
-    //     {
-    //         if($market->BaseCurrency == 'BTC' && $market->IsActive == 1)
-    //         {
-    //             $result[] = [ 'code' => $market->MarketCurrency, 'description' => $market->MarketCurrencyLong ];
-    //         }
-    //     }
-        
-    //     $result[] = [ 'code' => 'BTC', 'description' => 'Bitcoin' ];
-        
-    //     return $result;
-    // }
-    
     protected function toFixed($number)
     {
         return number_format($number, 4, ".", "");
