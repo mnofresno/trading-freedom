@@ -1,0 +1,28 @@
+<ion-view view-title="Exchanges orders">
+    <ion-content class="padding">
+      <ion-refresher
+          pulling-text="Get updated orders..."
+          on-refresh="ctrl.GetOrders()">
+      </ion-refresher>
+      <ng-include ng-init="orderType='OPEN'" src="'templates/orders/header.html'" ></ng-include>
+      <div class="row">
+          <div class="col valores-mercado">
+              <div class="list card" ng-show="ctrl.Orders.exchange">
+                  <a href="#" class="item item-icon-left" ng-repeat="item in ctrl.Orders.open">
+                    <ng-include src="'templates/orders/order-item.html'"></ng-include>
+                  </a>
+              </div>
+          </div>
+      </div>
+      <ng-include ng-init="orderType='CLOSED'" src="'templates/orders/header.html'" ></ng-include>
+      <div class="row">
+          <div class="col valores-mercado">
+              <div class="list card" ng-show="ctrl.Orders.exchange">
+                  <a href="#" class="item item-icon-left" ng-repeat="item in ctrl.Orders.closed">
+                    <ng-include src="'templates/orders/order-item.html'"></ng-include>
+                  </a>
+              </div>
+          </div>
+      </div>
+    </ion-content>
+</ion-view>

@@ -237,6 +237,11 @@ angular.module('trading-freedom.services', [])
       http({ url: ENV.endpoint + 'balances/' +  exchangeId, success: callback });
     };
 
+    self.GetOpenOrders = function(exchange, callback)
+    {
+      http({ url: ENV.endpoint + 'orders', success: callback });
+    };
+
     return self;
 })
 
@@ -261,6 +266,39 @@ angular.module('trading-freedom.services', [])
       url: ENV.endpoint + 'apikeys/' + exchangeId,
       method: 'DELETE',
     });
+  };
+
+  return self;
+})
+
+.service('BaseMarketController', function(lodash) {
+  var self = this;
+
+  var posibleIconClasses = [];
+
+  self.coinIconIsDefined = function(coin)
+  {
+    if(posibleIconClasses.length === 0) {
+      for (var i = 0; i < document.styleSheets.length; i++) {
+        var rules = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
+        for (var x in rules) {
+          var item = rules[x].selectorText;
+          if ((typeof item == 'string') && item.startsWith('.cf-')) posibleIconClasses.push(item);
+        }
+      }
+    }
+    return !!lodash.find(posibleIconClasses, p => p == '.cf-' + coin + '::before');
+  };
+
+  self.getCurrencyIcon = function(moneda)
+  {
+    var coin = moneda.toLowerCase();
+    return self.coinIconIsDefined(coin) ? 'cf-3x cf cf-' + coin : 'ion-3x ion-cash';
+  };
+
+  self.getBalanceCurrencyIcon = function(item)
+  {
+    return self.getCurrencyIcon(item.MONEDA);
   };
 
   return self;

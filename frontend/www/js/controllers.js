@@ -73,10 +73,6 @@ angular.module('trading-freedom.controllers', [])
   return self;
 })
 
-.controller('ChatDetailCtrl', function($scope, $stateParams, Chats) {
-  $scope.chat = Chats.get($stateParams.chatId);
-})
-
 .controller('AccountCtrl', function (AuthService, UserService, $scope) {
   var self = this;
   self.editingUser = {};
@@ -116,6 +112,38 @@ angular.module('trading-freedom.controllers', [])
       ? self.editingUser.password &&
       self.editingUser.password === self.editingUser.repeatPassword
       : isValid();
+  };
+
+  return self;
+})
+
+.controller('OrdersCtrl', function (AuthService, UserService, $scope, BaseMarketController, CrawlerService) {
+  var self = {...BaseMarketController};
+
+  self.loadingMessage = "Getting information...";
+
+  self.Orders = { orders: [] };
+
+  self.onload = function () {
+    self.GetOrders('POLONIEX');
+  };
+
+  $scope.$on('$ionicView.beforeEnter', self.onload);
+
+  self.GetOrders = function(exchange)
+  {
+      self.selectedExchange = exchange;
+
+      if(!exchange) {
+        self.loadingMessage = "No keys configured";
+        return;
+      }
+
+      CrawlerService.GetOpenOrders(exchange, function(result)
+      {
+          self.Orders = result;
+          $scope.$broadcast('scroll.refreshComplete');
+      });
   };
 
   return self;
@@ -198,9 +226,9 @@ angular.module('trading-freedom.controllers', [])
     return self;
 })
 
-.controller('BalanceCtrl', function(CrawlerService, $scope, $localStorage, lodash)
+.controller('BalanceCtrl', function(CrawlerService, $scope, $localStorage, BaseMarketController)
 {
-    var self = this;
+    var self = {...BaseMarketController};
 
     self.loadingMessage = "Getting information...";
 
@@ -209,28 +237,6 @@ angular.module('trading-freedom.controllers', [])
     self.exchanges = [];
 
     self.selectedExchange = null;
-
-    var posibleIconClasses = [];
-
-    self.coinIconIsDefined = function(coin)
-    {
-      if(posibleIconClasses.length === 0) {
-        for (var i = 0; i < document.styleSheets.length; i++) {
-          var rules = document.styleSheets[i].rules || document.styleSheets[i].cssRules;
-          for (var x in rules) {
-            var item = rules[x].selectorText;
-            if ((typeof item == 'string') && item.startsWith('.cf-')) posibleIconClasses.push(item);
-          }
-        }
-      }
-      return !!lodash.find(posibleIconClasses, p => p == '.cf-' + coin + '::before');
-    };
-
-    self.getCurrencyIcon = function(item)
-    {
-      var coin = item.MONEDA.toLowerCase();
-      return self.coinIconIsDefined(coin) ? 'cf cf-' + coin : 'ion ion-cash';
-    };
 
     self.GetBalances = function(exchange)
     {

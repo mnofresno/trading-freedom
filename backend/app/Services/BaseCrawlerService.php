@@ -32,6 +32,7 @@ abstract class BaseCrawlerService
     abstract protected function getCurrencyMarket($currency, $tickers, $client);
     abstract protected function GetMarketAverage($market);
     
+
     protected function getAuthKeys($userId)
     {
         $currentUser = $this->user->find($userId);

@@ -1,0 +1,12 @@
+<div class="row">
+  <div class="col col-33">
+    <i class="order-icon" ng-class="ctrl.getCurrencyIcon(item.from)"></i>
+  </div>
+  <div class="col col-33">
+    <span class="order-type"><center>{{item.type.toUpperCase()}}</center></span><br/>
+    <span class="order-type">D: {{item.date|date:'dd/MM/yyyy'}} | T: {{item.total | number:4}} | A: {{item.amount}} | R: {{item.rate | number:4}}</span>
+  </div>
+  <div class="col col-33">
+    <i class="order-icon" ng-class="ctrl.getCurrencyIcon(item.to)"></i>
+  </div>
+</div>

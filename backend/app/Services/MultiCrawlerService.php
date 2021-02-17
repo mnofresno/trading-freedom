@@ -4,6 +4,7 @@ namespace App\Services;
 
 use App\Services\BitfinexCrawlerService;
 use App\Services\BittrexCrawlerService;
+use App\Services\PoloniexCrawlerService;
 
 class MultiCrawlerService
 {
@@ -23,5 +24,15 @@ class MultiCrawlerService
     {
         $crawler = $this->crawlers[$exchange];
         return $crawler->GetAllBalances($user_id);
+    }
+
+    public function GetOrders($user_id) {
+        // FIXME: By the moment only POLONIEX has implemented orders
+        $crawler = $this->crawlers['POLONIEX'];
+        return [
+            'open' => $crawler->GetOpenOrders($user_id),
+            'closed' => $crawler->GetTrades($user_id),
+            'exchange' => 'POLONIEX'
+        ];
     }
 }

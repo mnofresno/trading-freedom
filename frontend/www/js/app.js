@@ -100,27 +100,28 @@ angular.module('trading-freedom', ['ionic', 'trading-freedom.controllers', 'trad
         }
       }
     })
-    .state('tab.chat-detail', {
-      url: '/chats/:chatId',
+
+    .state('tab.account', {
+      url: '/account',
       views: {
-        'tab-chats': {
-          templateUrl: 'templates/chat-detail.html',
-          controller: 'ChatDetailCtrl',
-            controllerAs: 'ctrl'
+        'tab-account': {
+          templateUrl: 'templates/tab-account.html',
+          controller: 'AccountCtrl',
+          controllerAs: 'ctrl'
         }
       }
     })
 
-  .state('tab.account', {
-    url: '/account',
-    views: {
-      'tab-account': {
-        templateUrl: 'templates/tab-account.html',
-        controller: 'AccountCtrl',
-        controllerAs: 'ctrl'
+    .state('tab.orders', {
+      url: '/orders',
+      views: {
+        'tab-orders': {
+          templateUrl: 'templates/orders/tab.html',
+          controller: 'OrdersCtrl',
+          controllerAs: 'ctrl'
+        }
       }
-    }
-  })
+    })
 
   .state('login', {
     url: '/login',

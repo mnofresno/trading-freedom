@@ -34,6 +34,7 @@ Route::post('auth/register', 'Auth\LoginController@register');
 Route::group(['middleware' => 'jwt.auth'], function ()
 {
     Route::resource('balances', 'BalancesController');
+    Route::resource('orders', 'OrdersController');
     Route::resource('exchanges/own', 'OwnExchangeProvidersController');
     Route::resource('exchanges', 'ExchangeProvidersController');
     Route::resource('apikeys', 'ApiKeysController');
