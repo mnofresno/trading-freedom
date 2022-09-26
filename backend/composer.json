@@ -1,6 +1,4 @@
 {
-    "name": "trading-freedom",
-    "description": "The PHP trading helper backend API",
     "keywords": ["cryptocurrencies", "wallets", "balances", "exchanges"],
     "license": "MIT",
     "type": "project",
@@ -49,6 +47,9 @@
         ]
     },
     "config": {
+        "allow-plugins": {
+            "kylekatarnls/update-helper": true
+        },
         "preferred-install": "dist",
         "sort-packages": true,
         "optimize-autoloader": true
