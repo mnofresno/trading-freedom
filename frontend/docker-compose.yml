@@ -1,8 +1,7 @@
 version: '3'
 services:
   ionic:
-    build:
-      context: ./build
+    image: ghcr.io/mnofresno/ionic-builder:0.0.1
     volumes:
       - .:/code
       - ./.gradle:/root/.gradle
