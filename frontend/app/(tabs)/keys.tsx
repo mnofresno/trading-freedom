@@ -17,7 +17,8 @@ interface NewKey {
 
 interface Provider {
     id: number;
-    name: string;
+    description: string;
+    name?: string;
 }
 
 export default function KeysScreen() {
@@ -39,6 +40,7 @@ export default function KeysScreen() {
                 api.get('/exchanges') // All available exchanges to add
             ]);
             setOwnExchanges(ownRes.data);
+            console.log('Providers Data:', JSON.stringify(providersRes.data, null, 2));
             setProviders(providersRes.data);
         } catch (error) {
             console.log('Error loading keys data', error);

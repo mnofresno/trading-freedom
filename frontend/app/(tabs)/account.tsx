@@ -34,10 +34,12 @@ export default function AccountScreen() {
 
         setSaving(true);
         try {
-            const payload: any = { ...user };
+            const payload: any = {
+                name: user?.name,
+                email: user?.email,
+            };
             if (password) {
                 payload.password = password;
-                // Delete repeatPassword if API doesn't want it, actually payload usually doesn't include it if not mapped
             }
             // UserService.update sends POST to /users/own
             await api.post('/users/own', payload);
