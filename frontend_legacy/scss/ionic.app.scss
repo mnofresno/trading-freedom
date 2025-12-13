@@ -15,29 +15,43 @@ $royal:                           #886aea !default;
 $dark:                            #444 !default;
 */
 
+// --- Modern Variables Overrides ---
+$light: #F3F4F6 !default; // Cool Gray 100
+$stable: #F9FAFB !default; // Cool Gray 50
+$positive: #4F46E5 !default; // Indigo 600
+$calm: #06B6D4 !default; // Cyan 500
+$balanced: #10B981 !default; // Emerald 500
+$energized: #F59E0B !default; // Amber 500
+$assertive: #EF4444 !default; // Red 500
+$royal: #8B5CF6 !default; // Violet 500
+$dark: #1F2937 !default; // Gray 800
+
 // The path for our ionicons font files, relative to the built CSS in www/css
 $ionicons-font-path: "../lib/ionic/fonts" !default;
 
 // Include all of Ionic
 @import "www/lib/ionic/scss/ionic";
 
-.valores-mercado *:not(i){
+// Include Surgical Modernization Overrides
+@import "modern-theme";
+
+.valores-mercado *:not(i) {
     font-size: 8pt;
 }
 
-.valores-mercado .list.card *{
+.valores-mercado .list.card * {
     max-height: 100px;
     margin-top: -5px;
 }
 
-.button.button-fullwidth{
+.button.button-fullwidth {
     min-width: 100%;
 }
 
 .custom-select {
-  background-color: white;
-  height: 35px;
-  border: 1px solid #ddd;
-  color: #333;
-  padding: 0px 0px 0px 10px;
+    background-color: white;
+    height: 35px;
+    border: 1px solid #ddd;
+    color: #333;
+    padding: 0px 0px 0px 10px;
 }

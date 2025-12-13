@@ -7,7 +7,7 @@ services:
             uid: 1000
          context: ./
          dockerfile: docker/Dockerfile
-      image: trading_freedom
+      image: ghcr.io/mnofresno/trading_freedom_php7.4:0.0.1
       container_name: trading-app
       restart: unless-stopped
       working_dir: /var/www/
