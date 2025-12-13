@@ -1,0 +1,18 @@
+{
+  "name": "tradin-freedom-frontend",
+  "version": "0.0.1",
+  "description": "An Ionic project",
+  "private": true,
+  "devDependencies": {},
+  "dependencies": {
+    "cordova-android": "7.0.0"
+  },
+  "cordova": {
+    "plugins": {
+      "cordova-plugin-device": {},
+      "cordova-plugin-ionic-webview": {
+        "ANDROID_SUPPORT_ANNOTATIONS_VERSION": "27.+"
+      }
+    }
+  }
+}

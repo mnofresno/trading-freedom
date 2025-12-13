@@ -1,0 +1,75 @@
+import React, { createContext, useContext, useState, useEffect } from 'react';
+import * as SecureStore from 'expo-secure-store';
+import api from '../services/api';
+import { useRouter, useSegments } from 'expo-router';
+
+interface AuthContextType {
+    signIn: (token: string, userId: string) => Promise<void>;
+    signOut: () => Promise<void>;
+    userToken: string | null;
+    userId: string | null;
+    isLoading: boolean;
+}
+
+const AuthContext = createContext<AuthContextType | null>(null);
+
+export function useAuth() {
+    return useContext(AuthContext);
+}
+
+export function AuthProvider({ children }: { children: React.ReactNode }) {
+    const [userToken, setUserToken] = useState<string | null>(null);
+    const [userId, setUserId] = useState<string | null>(null);
+    const [isLoading, setIsLoading] = useState(true);
+    const rootSegment = useSegments()[0];
+    const router = useRouter();
+
+    useEffect(() => {
+        const loadToken = async () => {
+            try {
+                const token = await SecureStore.getItemAsync('user_token');
+                const id = await SecureStore.getItemAsync('user_id');
+                if (token && id) {
+                    setUserToken(token);
+                    setUserId(id);
+                }
+            } catch (e) {
+                console.error('Failed to load token', e);
+            } finally {
+                setIsLoading(false);
+            }
+        };
+
+        loadToken();
+    }, []);
+
+    useEffect(() => {
+        if (isLoading) return;
+
+        if (!userToken && rootSegment !== 'login' && rootSegment !== 'signup') {
+            router.replace('/login');
+        } else if (userToken && (rootSegment === 'login' || rootSegment === 'signup')) {
+            router.replace('/(tabs)');
+        }
+    }, [userToken, rootSegment, isLoading]);
+
+    const signIn = async (token: string, id: string) => {
+        await SecureStore.setItemAsync('user_token', token);
+        await SecureStore.setItemAsync('user_id', id);
+        setUserToken(token);
+        setUserId(id);
+    };
+
+    const signOut = async () => {
+        await SecureStore.deleteItemAsync('user_token');
+        await SecureStore.deleteItemAsync('user_id');
+        setUserToken(null);
+        setUserId(null);
+    };
+
+    return (
+        <AuthContext.Provider value={{ signIn, signOut, userToken, userId, isLoading }}>
+            {children}
+        </AuthContext.Provider>
+    );
+}
