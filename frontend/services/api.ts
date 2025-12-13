@@ -1,5 +1,5 @@
 import axios from 'axios';
-import * as SecureStore from 'expo-secure-store';
+import storage from '../utils/storage';
 
 const API_URL = 'https://trading-freedom.fresno.ar/api';
 
@@ -12,9 +12,10 @@ const api = axios.create({
 });
 
 api.interceptors.request.use(async (config) => {
-    const token = await SecureStore.getItemAsync('user_token');
+    const token = await storage.getItemAsync('user_token');
     if (token) {
-        config.headers.Authorization = `Bearer ${token}`;
+        // Backend middleware expects lowercase "bearer" (not standard but required for compatibility)
+        config.headers.Authorization = `bearer ${token}`;
     }
     return config;
 });

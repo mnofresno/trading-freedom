@@ -1,5 +1,5 @@
 import React, { createContext, useContext, useState, useEffect } from 'react';
-import * as SecureStore from 'expo-secure-store';
+import storage from '../utils/storage';
 import api from '../services/api';
 import { useRouter, useSegments } from 'expo-router';
 
@@ -27,8 +27,8 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
     useEffect(() => {
         const loadToken = async () => {
             try {
-                const token = await SecureStore.getItemAsync('user_token');
-                const id = await SecureStore.getItemAsync('user_id');
+                const token = await storage.getItemAsync('user_token');
+                const id = await storage.getItemAsync('user_id');
                 if (token && id) {
                     setUserToken(token);
                     setUserId(id);
@@ -55,15 +55,15 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
 
     const signIn = async (token: string, id: string | number) => {
         const idStr = String(id);
-        await SecureStore.setItemAsync('user_token', token);
-        await SecureStore.setItemAsync('user_id', idStr);
+        await storage.setItemAsync('user_token', token);
+        await storage.setItemAsync('user_id', idStr);
         setUserToken(token);
         setUserId(idStr);
     };
 
     const signOut = async () => {
-        await SecureStore.deleteItemAsync('user_token');
-        await SecureStore.deleteItemAsync('user_id');
+        await storage.deleteItemAsync('user_token');
+        await storage.deleteItemAsync('user_id');
         setUserToken(null);
         setUserId(null);
     };

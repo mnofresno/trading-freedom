@@ -43,7 +43,11 @@ export default function KeysScreen() {
             setOwnExchanges(ownRes.data || []);
             const providersData = providersRes.data || [];
             console.log('Providers Data:', JSON.stringify(providersData, null, 2));
-            setProviders(providersData);
+            // Remove duplicates by code
+            const uniqueProviders = providersData.filter((provider: Provider, index: number, self: Provider[]) => 
+                index === self.findIndex((p: Provider) => p.code === provider.code || p.id === provider.id)
+            );
+            setProviders(uniqueProviders);
         } catch (error: any) {
             console.error('Error loading keys data', error);
             const errorMessage = error.response?.data?.message || error.message || 'Failed to load exchanges';
