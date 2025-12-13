@@ -1,5 +1,6 @@
 import React, { useState } from 'react';
 import { View, Text, TextInput, TouchableOpacity, Alert, ActivityIndicator } from 'react-native';
+import { Ionicons } from '@expo/vector-icons';
 import { Link } from 'expo-router';
 import { useAuth } from '../context/AuthContext';
 import api from '../services/api';
@@ -7,6 +8,7 @@ import api from '../services/api';
 export default function LoginScreen() {
     const [email, setEmail] = useState('');
     const [password, setPassword] = useState('');
+    const [showPassword, setShowPassword] = useState(false);
     const [loading, setLoading] = useState(false);
     const auth = useAuth();
 
@@ -19,18 +21,12 @@ export default function LoginScreen() {
         setLoading(true);
         try {
             const response = await api.post('/auth/login', { email, password });
-            const { token, user_id } = response.data; // Adjust based on actual API response
-            // Legacy API response might be different. 
-            // Based on legacy services.js: AuthService.setToken(data) -> data.token, data.userId/id
-            // Let's assume standard response. If legacy, we'll debug.
-
-            // Legacy AuthService.setToken: $localStorage.set('user_token', loginData.token); $localStorage.set('user_id', loginData.userId)
-            // So expected response is { token: '...', userId: '...' }
-
-            await auth?.signIn(token, user_id || response.data.userId); // Handle camelCase or snake_case
+            const { token, user_id } = response.data;
+            await auth?.signIn(token, user_id || response.data.userId);
         } catch (error: any) {
             console.log(error);
-            Alert.alert('Login Failed', error.response?.data?.message || 'Invalid credentials');
+            const message = error.response?.data?.message || error.message || 'Connection failed';
+            Alert.alert('Login Failed', message);
         } finally {
             setLoading(false);
         }
@@ -59,14 +55,22 @@ export default function LoginScreen() {
 
                     <View>
                         <Text className="text-gray-700 dark:text-gray-300 mb-1">Password</Text>
-                        <TextInput
-                            className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500"
-                            placeholder="••••••••"
-                            placeholderTextColor="#9CA3AF"
-                            secureTextEntry
-                            value={password}
-                            onChangeText={setPassword}
-                        />
+                        <View className="relative justify-center">
+                            <TextInput
+                                className="w-full px-4 py-3 rounded-lg bg-gray-50 dark:bg-gray-700 border border-gray-300 dark:border-gray-600 focus:border-indigo-500 focus:ring-1 focus:ring-indigo-500 pr-12"
+                                placeholder="••••••••"
+                                placeholderTextColor="#9CA3AF"
+                                secureTextEntry={!showPassword}
+                                value={password}
+                                onChangeText={setPassword}
+                            />
+                            <TouchableOpacity
+                                onPress={() => setShowPassword(!showPassword)}
+                                className="absolute right-4"
+                            >
+                                <Ionicons name={showPassword ? "eye-off" : "eye"} size={24} color="#9CA3AF" />
+                            </TouchableOpacity>
+                        </View>
                     </View>
 
                     <TouchableOpacity

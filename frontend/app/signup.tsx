@@ -32,7 +32,8 @@ export default function SignupScreen() {
             await auth?.signIn(token, user_id || loginResponse.data.userId);
         } catch (error: any) {
             console.log(error);
-            Alert.alert('Registration Failed', error.response?.data?.message || 'Something went wrong');
+            const message = error.response?.data?.message || error.message || 'Registration failed';
+            Alert.alert('Registration Failed', message);
         } finally {
             setLoading(false);
         }

@@ -53,11 +53,12 @@ export function AuthProvider({ children }: { children: React.ReactNode }) {
         }
     }, [userToken, rootSegment, isLoading]);
 
-    const signIn = async (token: string, id: string) => {
+    const signIn = async (token: string, id: string | number) => {
+        const idStr = String(id);
         await SecureStore.setItemAsync('user_token', token);
-        await SecureStore.setItemAsync('user_id', id);
+        await SecureStore.setItemAsync('user_id', idStr);
         setUserToken(token);
-        setUserId(id);
+        setUserId(idStr);
     };
 
     const signOut = async () => {

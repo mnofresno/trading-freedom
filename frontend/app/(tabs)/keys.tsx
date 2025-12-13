@@ -156,7 +156,9 @@ export default function KeysScreen() {
                                     onPress={() => setSelectedProviderId(p.id)}
                                     className={`px-3 py-2 rounded-lg border ${selectedProviderId === p.id ? 'bg-indigo-100 border-indigo-500' : 'bg-gray-50 border-gray-200'}`}
                                 >
-                                    <Text className={selectedProviderId === p.id ? 'text-indigo-700 font-medium' : 'text-gray-600'}>{p.name}</Text>
+                                    <Text className={selectedProviderId === p.id ? 'text-indigo-700 font-medium' : 'text-gray-600'}>
+                                        {p.description || p.name}
+                                    </Text>
                                 </TouchableOpacity>
                             ))}
                         </View>
