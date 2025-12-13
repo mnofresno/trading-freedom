@@ -41,13 +41,14 @@ export default function AccountScreen() {
             if (password) {
                 payload.password = password;
             }
-            // UserService.update sends POST to /users/own
-            await api.post('/users/own', payload);
-            Alert.alert("Success", "Profile updated");
+            const response = await api.post('/users/own', payload);
+            Alert.alert("Success", response.data?.message || "Profile updated");
             setPassword('');
             setRepeatPassword('');
-        } catch (e) {
-            Alert.alert("Error", "Failed to update profile");
+        } catch (e: any) {
+            const errorMessage = e.response?.data?.message || e.response?.data?.error || e.message || "Failed to update profile";
+            Alert.alert("Error", errorMessage);
+            console.error("Profile update error:", e);
         } finally {
             setSaving(false);
         }
