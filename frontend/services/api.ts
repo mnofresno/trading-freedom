@@ -1,7 +1,7 @@
 import axios from 'axios';
 import * as SecureStore from 'expo-secure-store';
 
-const API_URL = 'http://localhost:8000/api'; // Change to 10.0.2.2 for Android Emulator if localhost fails
+const API_URL = 'https://trading-freedom.fresno.ar/api';
 
 const api = axios.create({
     baseURL: API_URL,
