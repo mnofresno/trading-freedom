@@ -7,6 +7,9 @@
  * @author   Taylor Otwell <taylor@laravel.com>
  */
 
+// Suppress deprecated warnings for PHP 7.4 compatibility with Laravel 5.4
+error_reporting(E_ALL & ~E_DEPRECATED & ~E_STRICT);
+
 /*
 |--------------------------------------------------------------------------
 | Register The Auto Loader

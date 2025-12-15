@@ -25,6 +25,9 @@ class AppServiceProvider extends ServiceProvider
      */
     public function register()
     {
-        //
+        // Fix for JWT Auth with PHP 7.4 - register User model binding
+        $this->app->bind('App\Models\User', function ($app) {
+            return new \App\Models\User([]);
+        });
     }
 }

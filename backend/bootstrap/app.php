@@ -11,6 +11,14 @@
 |
 */
 
+// Suppress deprecated warnings for PHP 7.4 compatibility with Laravel 5.4
+set_error_handler(function($errno, $errstr, $errfile, $errline) {
+    if (strpos($errstr, 'Method ReflectionParameter::getClass() is deprecated') !== false) {
+        return true; // Suppress this specific error
+    }
+    return false; // Let other errors be handled normally
+}, E_DEPRECATED);
+
 $app = new Illuminate\Foundation\Application(
     realpath(__DIR__.'/../')
 );
